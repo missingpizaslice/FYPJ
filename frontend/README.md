@@ -74,3 +74,5 @@ git push -u orgin master
 git add *
 git commit -m "your message"
 git push
+
+git checkout -b "<name of your branch>"
