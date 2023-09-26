@@ -16,6 +16,11 @@ const appReducer = (state = initialState, action) => {
         ...state,
         msg: action.payload,
       };
+    case types.GET_SINGLE_DOCTOR:
+      return {
+        ...state,
+        doctor: action.payload,
+      }
     default:
       return state;
   }

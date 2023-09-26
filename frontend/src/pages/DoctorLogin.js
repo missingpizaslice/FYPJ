@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
+import { useDispatch, useSelector } from "react-redux";
+import { loadsingleDoctor } from "../redux/action";
+import { useNavigate } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -12,17 +15,61 @@ const inital = {
 };
 
 export default function DoctorLogin() {
-  const [state, setstate] = useState(inital);
-  const { email, password } = state;
+  const [localState, setLocalState] = useState(inital);
+
+  const [loginerror, setloginerror] = useState("");
+  const { email, password } = localState;
+  const dispatch = useDispatch();
+  const doctor = useSelector((state) => state.data.doctor);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (document.cookie) {
+      let cookie = document.cookie;
+      var doctor_data = JSON.parse(cookie);
+      if (doctor_data != null) {
+        navigate("/doctorDashboard");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    setloginerror("");
+    if (doctor.msg != null) {
+      setloginerror(doctor.msg);
+      setLocalState(inital);
+      return;
+    }
+
+    if (doctor.id != null) {
+      const doctorEmailfromDB = doctor.email;
+      const doctorPasswordfromDB = doctor.password;
+      authenticate(doctorEmailfromDB, doctorPasswordfromDB);
+    }
+  }, [doctor]);
 
   const handleChange = (e) => {
     let { name, value } = e.target;
-    setstate({ ...state, [name]: value });
+    setLocalState({ ...localState, [name]: value });
   };
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    console.log(state);
+    setloginerror("");
+    dispatch(loadsingleDoctor(email));
+  };
+
+  const authenticate = (doctorEmailfromDB, doctorPasswordfromDB) => {
+    if (password != doctorPasswordfromDB) {
+      setloginerror("Login failed please try again");
+      setLocalState(inital);
+      return;
+    } else {
+      setLocalState(inital);
+      setloginerror("");
+      document.cookie = JSON.stringify(doctor);
+      navigate("/doctorDashboard");
+    }
   };
 
   return (
@@ -53,6 +100,7 @@ export default function DoctorLogin() {
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
               Login
             </Typography>
+            <Typography component="p">{loginerror}</Typography>
             <FormControl fullWidth="true" margin="normal">
               <Typography component="p" align="left">
                 Email
