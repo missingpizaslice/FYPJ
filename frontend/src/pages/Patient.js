@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import { Container, Typography } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import { FormControl, TextField } from "@mui/material";
+
+import PatientNav from "../components/PatientNav";
 
 export default function Patient() {
   const videoRef = useRef(null);
@@ -38,7 +38,7 @@ export default function Patient() {
       }
     } else {
       navigator.mediaDevices
-        .getUserMedia({ video: { width: 720 } })
+        .getUserMedia({ video: true })
         .then((stream) => {
           video.srcObject = stream;
           video.play();
@@ -63,35 +63,39 @@ export default function Patient() {
 
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ background: "#2668c3" }}>
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Pain Analysis
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </Box>
+      <PatientNav />
+      <Container>
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              maxWidth: "800px",
+              marginBottom: "70px",
+              boxShadow: 2,
+              padding: "50px",
+              borderRadius: "5px",
+            }}
+          >
+            <Container sx={{ width: "100%" }}>
+              <video sx={{ width: "100%", maxWidth: "640px" }} ref={videoRef} />
+            </Container>
 
-      <Container
-        sx={{
-          marginTop: 8,
-          marginBottom: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <video ref={videoRef} />
+            <Button
+              variant="contained"
+              sx={{ margin: 2, padding: "10px" }}
+              onClick={startWebCam}
+            >
+              {videoOn ? "Stop" : "Start"}
+            </Button>
+          </Box>
+        </Box>
       </Container>
-
-      <Button
-        variant="contained"
-        sx={{ margin: 2, padding: "10px" }}
-        onClick={startWebCam}
-      >
-        {videoOn ? "Stop" : "Start"}
-      </Button>
 
       <Modal open={open}>
         <Box sx={style}>
