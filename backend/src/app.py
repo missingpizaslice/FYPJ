@@ -41,14 +41,17 @@ def getArrayofDoctors():
 
 @app.route("/api/doctor/<id>", methods=["GET"])
 def getOneDoctor(id):
-    doctor = doctorCollection.find_one({"_id": ObjectId(id)})
-    return jsonify({
-        "id": str(ObjectId(doctor["_id"])),
-        "name": doctor["name"],
-        "email": doctor["email"],
-        "password": doctor["password"],
-        "staffNumber": doctor["staffNumber"]
-    })
+    doctor = doctorCollection.find_one({"email": id})
+    if doctor:
+        return jsonify({
+            "id": str(ObjectId(doctor["_id"])),
+            "name": doctor["name"],
+            "email": doctor["email"],
+            "password": doctor["password"],
+            "staffNumber": doctor["staffNumber"]
+        })
+    else:
+        return jsonify({"msg": "the account does not exist"})
 
 # temporarily disabled
 # @app.route("/api/doctors/<id>", methods=["DELETE"])

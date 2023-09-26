@@ -6,9 +6,11 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+// pages
 import ErrorPage from "./pages/error404";
 import DoctorLogin from "./pages/DoctorLogin";
 import DoctorRegister from './pages/DoctorRegister';
+import DoctorDashboard from './pages/DoctorDashboard';
 
 
 const router = createBrowserRouter([
@@ -18,12 +20,16 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/staffaccess",
+    path: "/doctorLogin",
     element: <DoctorLogin />,
   },
   {
-    path: "/staffregister",
+    path: "/doctorRegistration",
     element: <DoctorRegister />,
+  },
+  {
+    path: "/doctorDashboard",
+    element: <DoctorDashboard />
   },
 ]);
 
