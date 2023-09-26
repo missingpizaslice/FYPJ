@@ -28,16 +28,16 @@ def createDoctor():
 
 @app.route("/api/doctor", methods=["GET"])
 def getArrayofDoctors():
-    users = []
+    doctors = []
     for doc in doctorCollection.find():
-        users.append({
+        doctors.append({
             "id": str(ObjectId(doc["_id"])),
             "name": doc["name"],
             "email": doc["email"],
             "password": doc["password"],
             "staffNumber": doc["staffNumber"]
         })
-    return jsonify(users)
+    return jsonify(doctors)
 
 @app.route("/api/doctor/<id>", methods=["GET"])
 def getOneDoctor(id):
@@ -76,18 +76,18 @@ def createPatient():
         "doctorID": request.json["doctorID"],
         "name": request.json["name"]
     }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "new doctor has been added successfully"})
+    return jsonify({"id": str(ObjectId(id)), "msg": "new patient has been added successfully"})
 
 @app.route("/api/patient", methods=["GET"])
 def getArrayofPatients():
-    users = []
+    patients = []
     for doc in patientCollection.find():
-        users.append({
+        patients.append({
             "id": str(ObjectId(doc["_id"])),
             "doctorID": doc["doctorID"],
             "name": doc["name"]
         })
-    return jsonify(users)
+    return jsonify(patients)
 
 @app.route("/api/patient/<id>", methods=["GET"])
 def getOnePatient(id):
@@ -102,7 +102,7 @@ def getOnePatient(id):
 # @app.route("/api/patient/<id>", methods=["DELETE"])
 # def deleteOnePatient(id):
 #     patientCollection.delete_one({"_id": ObjectId(id)})
-#     return jsonify({"msg": "doctor account deleted successfully"})
+#     return jsonify({"msg": "patient account deleted successfully"})
 
 @app.route("/api/patient/<id>", methods=["PUT"])
 def updatePatientDetails(id):
@@ -110,7 +110,7 @@ def updatePatientDetails(id):
         "doctorID": request.json["doctorID"],
         "name": request.json["name"]
     }})
-    return jsonify({"msg": "doctor details updated successfully"})
+    return jsonify({"msg": "patient details updated successfully"})
 
 
 if __name__ == "__main__":
