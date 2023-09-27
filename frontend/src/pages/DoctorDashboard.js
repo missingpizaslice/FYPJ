@@ -4,29 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function DoctorDashboard() {
-  // const doctor = useSelector((state) => state.data.doctor);
-  // var cookie = document.cookie;
-  // var doctor_data = JSON.parse(cookie);
+  const doc = localStorage.getItem("doctor_id");
+  const doc_name = localStorage.getItem("doctor_name");
 
-  var cookie = "";
-  var doctor_data = "";
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!document.cookie) {
-      navigate("/doctorLogin");
-    } else {
-      cookie = document.cookie;
-      doctor_data = JSON.parse(cookie);
-      console.log(doctor_data);
-    }
-  }, []);
+  console.log(doc);
+  console.log(doc_name);
 
   return (
     <>
       <PatientNav />
 
-      <div>welcome {doctor_data["id"]}</div>
+      <div>welcome {localStorage.getItem("doctor_name")}</div>
     </>
   );
 }
