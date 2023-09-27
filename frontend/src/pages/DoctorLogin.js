@@ -23,14 +23,15 @@ export default function DoctorLogin() {
   const doctor = useSelector((state) => state.data.doctor);
   const navigate = useNavigate();
 
+  const doc = localStorage.getItem("doctor_id");
+  const doc_name = localStorage.getItem("doctor_name");
+
+  console.log("sign in", doc);
+  console.log("sign in", doc_name);
+
   useEffect(() => {
-    if (document.cookie) {
-      let cookie = document.cookie;
-      var doctor_data = JSON.parse(cookie);
-      if (doctor_data != null) {
-        navigate("/doctorDashboard");
-      }
-    }
+    setloginerror("");
+    localStorage.clear();
   }, []);
 
   useEffect(() => {
@@ -67,7 +68,9 @@ export default function DoctorLogin() {
     } else {
       setLocalState(inital);
       setloginerror("");
-      document.cookie = JSON.stringify(doctor);
+      console.log(doctor["id"]);
+      localStorage.setItem("doctor_id", doctor["id"]);
+      localStorage.setItem("doctor_name", doctor["name"]);
       navigate("/doctorDashboard");
     }
   };

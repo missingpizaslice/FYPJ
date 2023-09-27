@@ -28,6 +28,7 @@ export default function DoctorRegister() {
 
   const handlesubmit = (e) => {
     e.preventDefault();
+    console.log(state)
     dispatch(addDoctor(state));
     setstate(inital);
   };
