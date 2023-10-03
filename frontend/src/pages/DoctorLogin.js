@@ -41,9 +41,28 @@ export default function DoctorLogin() {
       setLocalState(inital);
       return;
     }
-    
+
     // if it returns with the doctors information, proceed with the authentication process
     if (doctor.id != null) {
+
+      // this function authenticates the user
+      const authenticate = (doctorPasswordfromDB) => {
+        if (password !== doctorPasswordfromDB) {
+          setloginerror("Login failed please try again");
+          setLocalState(inital);
+          return;
+        } else {
+          setLocalState(inital);
+          setloginerror("");
+          console.log(doctor["id"]);
+          localStorage.setItem("doctor_id", doctor["id"]);
+          localStorage.setItem("doctor_email", doctor["email"]);
+          localStorage.setItem("doctor_name", doctor["name"]);
+          localStorage.setItem("doctor_staffNumber", doctor["staffNumber"]);
+          navigate("/doctorDashboard");
+        }
+      };
+
       const doctorEmailfromDB = doctor.email;
       const doctorPasswordfromDB = doctor.password;
       authenticate(doctorEmailfromDB, doctorPasswordfromDB);
@@ -64,22 +83,7 @@ export default function DoctorLogin() {
     dispatch(loadsingleDoctor(email));
   };
 
-  // this function authenticates the user
-  const authenticate = (doctorEmailfromDB, doctorPasswordfromDB) => {
-    if (password != doctorPasswordfromDB) {
-      setloginerror("Login failed please try again");
-      setLocalState(inital);
-      return;
-    } else {
-      setLocalState(inital);
-      setloginerror("");
-      console.log(doctor["id"]);
-      localStorage.setItem("doctor_id", doctor["id"]);
-      localStorage.setItem("doctor_name", doctor["name"]);
-      navigate("/doctorDashboard");
-    }
-  };
-
+  // React component that returns the login page
   return (
     <>
       <PatientNav />
