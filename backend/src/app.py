@@ -79,8 +79,23 @@ def getArrayofDoctors():
     return jsonify(doctors)
 
 @app.route("/api/doctor/<id>", methods=["GET"])
-def getOneDoctor(id):
+def getdoctorbyemail(id):
     doctor = doctorCollection.find_one({"email": id})
+    if doctor:
+        return jsonify({
+            "id": str(ObjectId(doctor["_id"])),
+            "name": doctor["name"],
+            "email": doctor["email"],
+            "password": doctor["password"],
+            "staffNumber": doctor["staffNumber"]
+        })
+    else:
+        return jsonify({"msg": "the account does not exist"})
+
+# get doctor information by id
+@app.route("/api/doctorByID/<id>", methods=["GET"])
+def getdoctorbyid(id):
+    doctor = doctorCollection.find_one({"_id": ObjectId(id)})
     if doctor:
         return jsonify({
             "id": str(ObjectId(doctor["_id"])),
@@ -123,21 +138,32 @@ def createPatient():
 @app.route("/api/patient", methods=["GET"])
 def getArrayofPatients():
     patients = []
-    for doc in patientCollection.find():
+    for patient in patientCollection.find():
         patients.append({
-            "id": str(ObjectId(doc["_id"])),
-            "doctorID": doc["doctorID"],
-            "name": doc["name"]
+            "id": str(ObjectId(patient["_id"])),
+            "doctorID": patient["doctorID"],
+            "name": patient["name"]
         })
     return jsonify(patients)
 
 @app.route("/api/patient/<id>", methods=["GET"])
+def getPatientsbyDoctor(id):
+    patients = []
+    for patient in patientCollection.find({"doctorID": id}):
+        patients.append({
+            "id": str(ObjectId(patient["_id"])),
+            "doctorID": patient["doctorID"],
+            "name": patient["name"]
+        })
+    return jsonify(patients)
+
+@app.route("/api/patientOne/<id>", methods=["GET"])
 def getOnePatient(id):
-    doctor = patientCollection.find_one({"_id": ObjectId(id)})
+    patient = patientCollection.find_one({"_id": ObjectId(id)})
     return jsonify({
-        "id": str(ObjectId(doctor["_id"])),
-        "doctorID": doctor["doctorID"],
-        "name": doctor["name"]
+        "id": str(ObjectId(patient["_id"])),
+        "doctorID": patient["doctorID"],
+        "name": patient["name"]
     })
 
 # temporarily disabled

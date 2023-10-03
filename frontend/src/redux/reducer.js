@@ -12,6 +12,7 @@ const initialState = {
 const appReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_DOCTOR:
+    case types.ADD_PATIENT:
       return {
         ...state,
         msg: action.payload,
@@ -20,6 +21,11 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         doctor: action.payload,
+      }
+    case types.GET_PATIENTS:
+      return {
+        ...state,
+        patients: action.payload,
       }
     default:
       return state;

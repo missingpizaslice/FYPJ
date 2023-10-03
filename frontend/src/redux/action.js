@@ -8,10 +8,22 @@ const doctorAdded = (msg) => ({
   payload: msg,
 });
 
+const patientAdded = (msg) => ({
+  type: types.ADD_PATIENT,
+  payload: msg,
+});
+
 const getDoctor = (doctor) => ({
   type: types.GET_SINGLE_DOCTOR,
   payload: doctor,
 });
+
+const patientGet = (patients) => ({
+  type: types.GET_PATIENTS,
+  payload: patients,
+})
+
+// ==================== Actions ====================
 
 export const addDoctor = (doctor) => {
   return function (dispatch) {
@@ -19,6 +31,18 @@ export const addDoctor = (doctor) => {
       .post(`${API}/api/doctor`, doctor)
       .then((resp) => {
         dispatch(doctorAdded(resp.data.msg));
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
+export const addPatient = (patient) => {
+  return function (dispatch) {
+    axios
+      .post(`${API}/api/patient`, patient)
+      .then((resp) => {
+        dispatch(patientAdded(resp.data.msg));
+        dispatch(getPatients(patient.doctorID));
       })
       .catch((err) => console.log(err));
   };
@@ -34,3 +58,14 @@ export const loadsingleDoctor = (id) => {
       .catch((err) => console.log(err));
   };
 };
+
+export const getPatients = (id) => {
+  return function (dispatch) {
+    axios
+      .get(`${API}/api/patient/${id}`)
+      .then((resp) => {
+        dispatch(patientGet(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+}
