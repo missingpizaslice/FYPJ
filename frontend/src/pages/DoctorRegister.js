@@ -7,7 +7,7 @@ import { addDoctor } from "../redux/action";
 // material UI imports
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { FormControl, TextField, Typography } from "@mui/material";
+import { FormControl, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import Modal from "@mui/material/Modal";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -19,12 +19,13 @@ const inital = {
   staffNumber: "",
   password: "",
   confirmPassword: "",
+  staffType: "",
 };
 
 export default function DoctorRegister() {
   // declare variables
   const [state, setstate] = useState(inital);
-  const { email, name, staffNumber, password, confirmPassword } = state;
+  const { email, name, staffNumber, password, confirmPassword, staffType } = state;
   const dispatch = useDispatch();
   const [registrationError, setregistrationError] = useState("");
   const msg = useSelector((state) => state.data.msg);
@@ -34,7 +35,7 @@ export default function DoctorRegister() {
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
       setOpen(false);
-      setstate(inital)
+      setstate(inital);
     }
   };
 
@@ -104,7 +105,11 @@ export default function DoctorRegister() {
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
               Register
             </Typography>
-            <FormControl fullWidth={true} margin="normal" sx={{ color: "#d00000" }}>
+            <FormControl
+              fullWidth={true}
+              margin="normal"
+              sx={{ color: "#d00000" }}
+            >
               <Typography component="p">{registrationError}</Typography>
               <Typography component="p" align="left">
                 Email
@@ -174,6 +179,22 @@ export default function DoctorRegister() {
                 value={confirmPassword || ""}
                 onChange={handleChange}
               />
+            </FormControl>
+            <FormControl fullWidth={true} margin="normal">
+              <Typography component="p" align="left">
+                Account Type
+              </Typography>
+              <Select
+                required
+                name="staffType"
+                value={staffType || ""}
+                onChange={handleChange}
+              >
+                <MenuItem value={"Doctor"}>Doctor</MenuItem>
+                <MenuItem value={"Admin"}>
+                  Admin
+                </MenuItem>
+              </Select>
             </FormControl>
             <div className=".d-grid gap-2 mt-2">
               <Button

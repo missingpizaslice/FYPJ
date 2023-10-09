@@ -8,12 +8,12 @@ import ErrorPage from "./pages/error404";
 import DoctorLogin from "./pages/DoctorLogin";
 import DoctorRegister from "./pages/DoctorRegister";
 import DoctorDashboard from "./pages/DoctorDashboard";
+import Homepage from "./pages/Homepage";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/patient",
     element: <Patient />,
-    errorElement: <ErrorPage />,
   },
   {
     path: "/doctorLogin",
@@ -26,6 +26,11 @@ const router = createBrowserRouter([
   {
     path: "/doctorDashboard",
     element: <DoctorDashboard />,
+  },
+  {
+    path: "/",
+    element: <Homepage />,
+    errorElement: <ErrorPage />,
   },
 ]);
 
