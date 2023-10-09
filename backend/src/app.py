@@ -192,7 +192,8 @@ def createRecord():
     id = recordsCollection.insert_one({
         "patientID": request.json["patientID"],
         "datetime": request.json["datetime"],
-        "painlevel": request.json["painlevel"]
+        "painlevel": request.json["painlevel"],
+        "activity": request.json["activity"],
     }).inserted_id
     return jsonify({"id": str(ObjectId(id)), "msg": "new record has been added successfully"})
 
@@ -204,7 +205,8 @@ def getArrayofRecords(id):
             "id": str(ObjectId(record["_id"])),
             "patientID": record["patientID"],
             "datetime": record["datetime"],
-            "painlevel": record["painlevel"]
+            "painlevel": record["painlevel"],
+            "activity": record["activity"],
         })
     return jsonify(records)
 
