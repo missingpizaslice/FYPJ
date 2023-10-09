@@ -26,19 +26,19 @@ def createDoctor():
 
     emailValid = True
 
-    if re.match(emailRegex, request.json["email"]):
+    if re.match(emailRegex, request.json["email"].lower()):
         emailValid = True
     else:
         emailValid = False
         return jsonify({"msg": "the email is invalid"})
 
-    if re.match(nameRegex , request.json["name"]):
+    if re.match(nameRegex , request.json["name"].lower()):
         emailValid = True
     else:
         emailValid = False
         return jsonify({"msg": "the name is invalid"})
 
-    if re.match(staffNumberRegex, request.json["staffNumber"]):
+    if re.match(staffNumberRegex, request.json["staffNumber"].lower()):
         emailValid = True
     else:
         emailValid = False
@@ -57,10 +57,11 @@ def createDoctor():
         
     if (emailValid):
         id = doctorCollection.insert_one({
-        "name": request.json["name"],
-        "email": request.json["email"],
-        "password": request.json["password"],
-        "staffNumber": request.json["staffNumber"]
+        "name": request.json["name"].lower(),
+        "email": request.json["email"].lower(),
+        "password": request.json["password"].lower(),
+        "staffNumber": request.json["staffNumber"].lower(),
+        "staffType": request.json["staffType"].lower()
     }).inserted_id
     return jsonify({"id": str(ObjectId(id)), "msg": "new doctor has been added successfully"})
     
@@ -74,7 +75,8 @@ def getArrayofDoctors():
             "name": doc["name"],
             "email": doc["email"],
             "password": doc["password"],
-            "staffNumber": doc["staffNumber"]
+            "staffNumber": doc["staffNumber"],
+            "staffType": doc["staffType"]
         })
     return jsonify(doctors)
 
@@ -87,7 +89,8 @@ def getdoctorbyemail(id):
             "name": doctor["name"],
             "email": doctor["email"],
             "password": doctor["password"],
-            "staffNumber": doctor["staffNumber"]
+            "staffNumber": doctor["staffNumber"],
+            "staffType": doctor["staffType"]
         })
     else:
         return jsonify({"msg": "the account does not exist"})
@@ -102,7 +105,8 @@ def getdoctorbyid(id):
             "name": doctor["name"],
             "email": doctor["email"],
             "password": doctor["password"],
-            "staffNumber": doctor["staffNumber"]
+            "staffNumber": doctor["staffNumber"],
+            "staffType": doctor["staffType"]
         })
     else:
         return jsonify({"msg": "the account does not exist"})
@@ -119,7 +123,8 @@ def updateDoctorDetails(id):
         "name": request.json["name"],
         "email": request.json["email"],
         "password": request.json["password"],
-        "staffNumber": request.json["staffNumber"]
+        "staffNumber": request.json["staffNumber"],
+        "staffType": request.json["staffType"]
     }})
     return jsonify({"msg": "doctor details updated successfully"})
 
@@ -180,6 +185,28 @@ def updatePatientDetails(id):
     }})
     return jsonify({"msg": "patient details updated successfully"})
 
+# ========================================================================================================
+
+@app.route("/api/record", methods=["POST"])
+def createRecord():
+    id = recordsCollection.insert_one({
+        "patientID": request.json["patientID"],
+        "datetime": request.json["datetime"],
+        "painlevel": request.json["painlevel"]
+    }).inserted_id
+    return jsonify({"id": str(ObjectId(id)), "msg": "new record has been added successfully"})
+
+@app.route("/api/record/<id>", methods=["GET"])
+def getArrayofRecords(id):
+    records = []
+    for record in recordsCollection.find({"patientID": id}):
+        records.append({
+            "id": str(ObjectId(record["_id"])),
+            "patientID": record["patientID"],
+            "datetime": record["datetime"],
+            "painlevel": record["painlevel"]
+        })
+    return jsonify(records)
 
 if __name__ == "__main__":
     app.run(debug=True)
