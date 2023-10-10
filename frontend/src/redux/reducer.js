@@ -27,6 +27,11 @@ const appReducer = (state = initialState, action) => {
         ...state,
         patients: action.payload,
       }
+    case types.SET_MSG:
+      return {
+        ...state,
+        ...initialState
+      }
     default:
       return state;
   }

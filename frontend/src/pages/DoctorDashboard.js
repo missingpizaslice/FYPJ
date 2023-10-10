@@ -32,13 +32,17 @@ export default function DoctorDashboard() {
   const [finishedCreating, setfinishedCreating] = useState(false);
   const [state, setstate] = useState(inital);
   const { patientName, search } = state;
+  const doctorDataJSON = localStorage.getItem("doctorData");
+  const doctorData = JSON.parse(doctorDataJSON);
 
   useEffect(() => {
-    if (doctor_id == null) {
+    if (doctorData == null || !doctorData.doctor_id) {
       navigate("/doctorLogin");
+      return;
     }
 
-    dispatch(getPatients(doctor_id));
+    console.log(doctorData);
+    dispatch(getPatients(doctorData.doctor_id));
   }, []);
 
   useEffect(() => {
@@ -62,7 +66,10 @@ export default function DoctorDashboard() {
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    const patientDetails = { name: patientName, doctorID: doctor_id };
+    const patientDetails = {
+      name: patientName,
+      doctorID: doctorData.doctor_id,
+    };
     setOpen(false);
     dispatch(addPatient(patientDetails));
   };

@@ -23,6 +23,11 @@ const patientGet = (patients) => ({
   payload: patients,
 })
 
+export const setMessage = (msg) => ({
+  type: types.SET_MSG,
+  payload: msg,
+})
+
 // ==================== Actions ====================
 
 export const addDoctor = (doctor) => {
