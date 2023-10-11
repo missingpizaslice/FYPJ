@@ -81,3 +81,5 @@ python src/app.py
 
 cd frontend
 npm start
+
+git checkout -b "<name of your branch>"
