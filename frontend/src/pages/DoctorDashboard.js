@@ -11,10 +11,11 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
-import { CircularProgress, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { FormControl, TextField } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Pagination from "@mui/material/Pagination";
 
 const inital = {
   search: "",
@@ -32,13 +33,24 @@ export default function DoctorDashboard() {
   const [finishedCreating, setfinishedCreating] = useState(false);
   const [state, setstate] = useState(inital);
   const { patientName, search } = state;
+  const doctorDataJSON = localStorage.getItem("doctorData");
+  const doctorData = JSON.parse(doctorDataJSON);
+
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5; // Change this value as needed
+
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayPatients = patients.slice(startIndex, endIndex);
 
   useEffect(() => {
-    if (doctor_id == null) {
+    if (doctorData == null || !doctorData.doctor_id) {
       navigate("/doctorLogin");
+      return;
     }
 
-    dispatch(getPatients(doctor_id));
+    console.log(doctorData);
+    dispatch(getPatients(doctorData.doctor_id));
   }, []);
 
   useEffect(() => {
@@ -62,7 +74,10 @@ export default function DoctorDashboard() {
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    const patientDetails = { name: patientName, doctorID: doctor_id };
+    const patientDetails = {
+      name: patientName,
+      doctorID: doctorData.doctor_id,
+    };
     setOpen(false);
     dispatch(addPatient(patientDetails));
   };
@@ -135,7 +150,7 @@ export default function DoctorDashboard() {
       <Container>
         <Box sx={{ marginTop: 5, marginBottom: 20, flexGrow: 1 }}>
           <Grid container spacing={2}>
-            {patients.map((patient) => (
+            {displayPatients.map((patient) => (
               <Grid item xs={12} sm={12} md={12} lg={12}>
                 <Card
                   sx={{
@@ -175,6 +190,13 @@ export default function DoctorDashboard() {
               </Grid>
             ))}
           </Grid>
+          <Pagination
+            count={Math.ceil(patients.length / itemsPerPage)}
+            page={page}
+            onChange={(event, value) => setPage(value)}
+            color="primary"
+            sx={{ paddingTop: "30px" }}
+          />
         </Box>
       </Container>
 
@@ -230,7 +252,7 @@ export default function DoctorDashboard() {
             type="submit"
             variant="contained"
             fullWidth={true}
-            sx={{ marginTop: "20px" }}
+            sx={{ marginTop: "30px" }}
             onClick={handleClose}
           >
             OK!

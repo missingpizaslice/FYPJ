@@ -9,6 +9,7 @@ import DoctorLogin from "./pages/DoctorLogin";
 import DoctorRegister from "./pages/DoctorRegister";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import Homepage from "./pages/Homepage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   {
     path: "/doctorLogin",
     element: <DoctorLogin />,
+  },
+  {
+    path: "/admindashboard",
+    element: <AdminDashboard />,
   },
   {
     path: "/doctorRegistration",

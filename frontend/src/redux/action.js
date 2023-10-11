@@ -23,6 +23,16 @@ const patientGet = (patients) => ({
   payload: patients,
 })
 
+const doctorGet = (doctors) => ({
+  type: types.GET_DOCTOR,
+  payload: doctors,
+})
+
+export const setMessage = (msg) => ({
+  type: types.SET_MSG,
+  payload: msg,
+})
+
 // ==================== Actions ====================
 
 export const addDoctor = (doctor) => {
@@ -65,6 +75,17 @@ export const getPatients = (id) => {
       .get(`${API}/api/patient/${id}`)
       .then((resp) => {
         dispatch(patientGet(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+}
+
+export const getDoctors = () => {
+  return function (dispatch) {
+    axios
+      .get(`${API}/api/doctor`)
+      .then((resp) => {
+        dispatch(doctorGet(resp.data));
       })
       .catch((err) => console.log(err));
   };
