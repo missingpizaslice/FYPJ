@@ -22,6 +22,11 @@ const appReducer = (state = initialState, action) => {
         ...state,
         doctor: action.payload,
       }
+    case types.GET_DOCTOR:
+      return {
+        ...state,
+        doctors: action.payload,
+      }
     case types.GET_PATIENTS:
       return {
         ...state,

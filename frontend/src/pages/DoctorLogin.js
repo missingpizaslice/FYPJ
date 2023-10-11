@@ -70,7 +70,7 @@ export default function DoctorLogin() {
             navigate("/doctorDashboard");
           }
           else {
-            navigate("/doctorregistration");
+            navigate("/admindashboard");
           }
         }
       };
