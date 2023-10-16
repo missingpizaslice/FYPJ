@@ -138,7 +138,7 @@ def createPatient():
         "doctorID": request.json["doctorID"],
         "name": request.json["name"]
     }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "new patient has been added successfully"})
+    return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following id: " + str(ObjectId(id)) + " to login to the app"})
 
 @app.route("/api/patient", methods=["GET"])
 def getArrayofPatients():

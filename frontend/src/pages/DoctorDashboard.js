@@ -2,7 +2,12 @@ import PatientNav from "../components/PatientNav";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loadsingleDoctor, getPatients, addPatient } from "../redux/action";
+import {
+  loadsingleDoctor,
+  getPatients,
+  addPatient,
+  searchPatient,
+} from "../redux/action";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -35,13 +40,19 @@ export default function DoctorDashboard() {
   const { patientName, search } = state;
   const doctorDataJSON = localStorage.getItem("doctorData");
   const doctorData = JSON.parse(doctorDataJSON);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filterPatients = patients.filter((patient) =>
+    patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    patient.id.includes(searchQuery.toLowerCase())
+  );
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 5; // Change this value as needed
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayPatients = patients.slice(startIndex, endIndex);
+  const displayPatients = filterPatients.slice(startIndex, endIndex);
 
   useEffect(() => {
     if (doctorData == null || !doctorData.doctor_id) {
@@ -82,6 +93,10 @@ export default function DoctorDashboard() {
     dispatch(addPatient(patientDetails));
   };
 
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
   // modal styling
   const style = {
     position: "absolute",
@@ -118,8 +133,8 @@ export default function DoctorDashboard() {
                         fullWidth={true}
                         type="text"
                         placeholder="Patient Search"
-                        name="email"
-                        // onChange={onChange}
+                        name="search"
+                        onChange={handleSearchInputChange}
                       />
                     </FormControl>
                   </Grid>
@@ -191,7 +206,7 @@ export default function DoctorDashboard() {
             ))}
           </Grid>
           <Pagination
-            count={Math.ceil(patients.length / itemsPerPage)}
+            count={Math.ceil(filterPatients.length / itemsPerPage)}
             page={page}
             onChange={(event, value) => setPage(value)}
             color="primary"

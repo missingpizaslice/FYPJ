@@ -14,7 +14,6 @@ export default function PatientNav() {
     // Clear user data from local storage or perform any necessary logout actions
     navigate("/doctorLogin");
     localStorage.removeItem("userData");
-    // Add any additional logout logic here, e.g., redirecting to the login page
   };
 
   return (

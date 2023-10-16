@@ -24,18 +24,28 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { doctors } = useSelector((state) => state.data);
+
   // const [loading, setloading] = useState(false);
   const [state, setstate] = useState(inital);
   const { patientName, search } = state;
   const doctorDataJSON = localStorage.getItem("doctorData");
   const doctorData = JSON.parse(doctorDataJSON);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const fiterdoctors = doctors.filter(
+    (doctor) =>
+      doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.id.includes(searchQuery.toLowerCase()) || 
+      doctor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.staffNumber.includes(searchQuery.toLowerCase())
+  );
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedDoctors = doctors.slice(startIndex, endIndex);
+  const displayedDoctors = fiterdoctors.slice(startIndex, endIndex);
 
   useEffect(() => {
     if (doctorData == null || !doctorData.doctor_id) {
@@ -50,6 +60,10 @@ export default function AdminDashboard() {
   const handleChange = (e) => {
     let { name, value } = e.target;
     setstate({ ...state, [name]: value });
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   return (
@@ -76,7 +90,7 @@ export default function AdminDashboard() {
                         type="text"
                         placeholder="Patient Search"
                         name="email"
-                        // onChange={onChange}
+                        onChange={handleSearchInputChange}
                       />
                     </FormControl>
                   </Grid>
@@ -120,19 +134,19 @@ export default function AdminDashboard() {
                     <Grid item xs={12} sm={12} md={6} lg={6}>
                       <CardContent>
                         <Typography sx={{ textAlign: "left" }}>
-                          Staff id: {doctor.id}
+                          id: {doctor.id}
                         </Typography>
                         <Typography sx={{ textAlign: "left" }}>
-                          Staff Email: {doctor.email}
+                          Email: {doctor.email}
                         </Typography>
                         <Typography sx={{ textAlign: "left" }}>
-                          Staff Number: {doctor.staffNumber}
+                          Number: {doctor.staffNumber}
                         </Typography>
                         <Typography sx={{ textAlign: "left" }}>
-                          Staff Name: {doctor.name}
+                          Name: {doctor.name}
                         </Typography>
                         <Typography sx={{ textAlign: "left" }}>
-                          Staff Type: {doctor.staffType}
+                          Type: {doctor.staffType}
                         </Typography>
                       </CardContent>
                     </Grid>
@@ -143,11 +157,11 @@ export default function AdminDashboard() {
             ))}
           </Grid>
           <Pagination
-            count={Math.ceil(doctors.length / itemsPerPage)}
+            count={Math.ceil(fiterdoctors.length / itemsPerPage)}
             page={page}
             onChange={(event, value) => setPage(value)}
-            color="primary" 
-            sx={{paddingTop: "30px"}}
+            color="primary"
+            sx={{ paddingTop: "30px" }}
           />
         </Box>
       </Container>

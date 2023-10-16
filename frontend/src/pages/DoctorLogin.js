@@ -125,7 +125,7 @@ export default function DoctorLogin() {
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
               Login
             </Typography>
-            <Typography component="p">{loginerror}</Typography>
+            <Typography component="p" color={"red"}>{loginerror}</Typography>
             <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
                 Email

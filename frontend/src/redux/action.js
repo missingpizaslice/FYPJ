@@ -21,17 +21,22 @@ const getDoctor = (doctor) => ({
 const patientGet = (patients) => ({
   type: types.GET_PATIENTS,
   payload: patients,
-})
+});
 
 const doctorGet = (doctors) => ({
   type: types.GET_DOCTOR,
   payload: doctors,
-})
+});
 
 export const setMessage = (msg) => ({
   type: types.SET_MSG,
   payload: msg,
-})
+});
+
+export const searchPatient = (patients) => ({
+  type: types.SET_PATIENT_VALUE,
+  payload: patients,
+});
 
 // ==================== Actions ====================
 
@@ -78,7 +83,7 @@ export const getPatients = (id) => {
       })
       .catch((err) => console.log(err));
   };
-}
+};
 
 export const getDoctors = () => {
   return function (dispatch) {
@@ -89,4 +94,4 @@ export const getDoctors = () => {
       })
       .catch((err) => console.log(err));
   };
-}
+};
