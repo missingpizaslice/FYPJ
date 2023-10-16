@@ -60,6 +60,7 @@ export default function DoctorLogin() {
             doctor_email: doctor["email"],
             doctor_name: doctor["name"],
             doctor_staffNumber: doctor["staffNumber"],
+            staffType: doctor["staffType"],
           }
           localStorage.setItem("doctorData", JSON.stringify(doctorData));
           // localStorage.setItem("doctor_id", doctor["id"]);

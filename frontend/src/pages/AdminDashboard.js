@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   const fiterdoctors = doctors.filter(
     (doctor) =>
       doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doctor.id.includes(searchQuery.toLowerCase()) || 
+      doctor.id.includes(searchQuery.toLowerCase()) ||
       doctor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doctor.staffNumber.includes(searchQuery.toLowerCase())
   );
@@ -48,7 +48,11 @@ export default function AdminDashboard() {
   const displayedDoctors = fiterdoctors.slice(startIndex, endIndex);
 
   useEffect(() => {
-    if (doctorData == null || !doctorData.doctor_id) {
+    if (
+      doctorData == null ||
+      !doctorData.doctor_id ||
+      doctorData.staffType != "admin"
+    ) {
       navigate("/doctorLogin");
       return;
     }
@@ -68,103 +72,107 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <PatientNav />
+      {doctorData && doctorData.doctor_id && doctorData.staffType == "admin" ? (
+        <>
+          <PatientNav />
 
-      <Container>
-        <Box sx={{ marginTop: 5, flexGrow: 1 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={12} lg={12}>
-              <Card
-                sx={{
-                  align: "center",
-                  padding: "20px",
-                  boxShadow: 3,
-                }}
-              >
-                <Grid container>
-                  <Grid item xs={12} sm={12} md={10} lg={10}>
-                    <FormControl fullWidth={true} sx={{ height: "50px" }}>
-                      <TextField
-                        required
-                        fullWidth={true}
-                        type="text"
-                        placeholder="Patient Search"
-                        name="email"
-                        onChange={handleSearchInputChange}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={2} lg={2}>
-                    <Button
-                      size="medium"
-                      variant="contained"
-                      sx={{
-                        marginLeft: { xs: "0", md: "23px" },
-                        marginTop: { xs: "20px", md: "0px" },
-                        height: "54px",
-                        paddingRight: "26px",
-                        paddingLeft: "26px",
-                        width: { xs: "100%", md: "auto" },
-                      }}
-                      onClick={() => navigate("/doctorRegistration")}
-                    >
-                      Add Doctor
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
-
-      <Container>
-        <Box sx={{ marginTop: 5, marginBottom: 20, flexGrow: 1 }}>
-          <Grid container spacing={2}>
-            {displayedDoctors.map((doctor) => (
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <Card
-                  sx={{
-                    align: "center",
-                    padding: "20px",
-                    boxShadow: 1,
-                  }}
-                >
-                  <Grid container>
-                    <Grid item xs={12} sm={12} md={6} lg={6}>
-                      <CardContent>
-                        <Typography sx={{ textAlign: "left" }}>
-                          id: {doctor.id}
-                        </Typography>
-                        <Typography sx={{ textAlign: "left" }}>
-                          Email: {doctor.email}
-                        </Typography>
-                        <Typography sx={{ textAlign: "left" }}>
-                          Number: {doctor.staffNumber}
-                        </Typography>
-                        <Typography sx={{ textAlign: "left" }}>
-                          Name: {doctor.name}
-                        </Typography>
-                        <Typography sx={{ textAlign: "left" }}>
-                          Type: {doctor.staffType}
-                        </Typography>
-                      </CardContent>
+          <Container>
+            <Box sx={{ marginTop: 5, flexGrow: 1 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <Card
+                    sx={{
+                      align: "center",
+                      padding: "20px",
+                      boxShadow: 3,
+                    }}
+                  >
+                    <Grid container>
+                      <Grid item xs={12} sm={12} md={10} lg={10}>
+                        <FormControl fullWidth={true} sx={{ height: "50px" }}>
+                          <TextField
+                            required
+                            fullWidth={true}
+                            type="text"
+                            placeholder="Patient Search"
+                            name="email"
+                            onChange={handleSearchInputChange}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={2} lg={2}>
+                        <Button
+                          size="medium"
+                          variant="contained"
+                          sx={{
+                            marginLeft: { xs: "0", md: "23px" },
+                            marginTop: { xs: "20px", md: "0px" },
+                            height: "54px",
+                            paddingRight: "26px",
+                            paddingLeft: "26px",
+                            width: { xs: "100%", md: "auto" },
+                          }}
+                          onClick={() => navigate("/doctorRegistration")}
+                        >
+                          Add Doctor
+                        </Button>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={6}></Grid>
-                  </Grid>
-                </Card>
+                  </Card>
+                </Grid>
               </Grid>
-            ))}
-          </Grid>
-          <Pagination
-            count={Math.ceil(fiterdoctors.length / itemsPerPage)}
-            page={page}
-            onChange={(event, value) => setPage(value)}
-            color="primary"
-            sx={{ paddingTop: "30px" }}
-          />
-        </Box>
-      </Container>
+            </Box>
+          </Container>
+
+          <Container>
+            <Box sx={{ marginTop: 5, marginBottom: 20, flexGrow: 1 }}>
+              <Grid container spacing={2}>
+                {displayedDoctors.map((doctor) => (
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <Card
+                      sx={{
+                        align: "center",
+                        padding: "20px",
+                        boxShadow: 1,
+                      }}
+                    >
+                      <Grid container>
+                        <Grid item xs={12} sm={12} md={6} lg={6}>
+                          <CardContent>
+                            <Typography sx={{ textAlign: "left" }}>
+                              id: {doctor.id}
+                            </Typography>
+                            <Typography sx={{ textAlign: "left" }}>
+                              Email: {doctor.email}
+                            </Typography>
+                            <Typography sx={{ textAlign: "left" }}>
+                              Number: {doctor.staffNumber}
+                            </Typography>
+                            <Typography sx={{ textAlign: "left" }}>
+                              Name: {doctor.name}
+                            </Typography>
+                            <Typography sx={{ textAlign: "left" }}>
+                              Type: {doctor.staffType}
+                            </Typography>
+                          </CardContent>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6}></Grid>
+                      </Grid>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+              <Pagination
+                count={Math.ceil(fiterdoctors.length / itemsPerPage)}
+                page={page}
+                onChange={(event, value) => setPage(value)}
+                color="primary"
+                sx={{ paddingTop: "30px" }}
+              />
+            </Box>
+          </Container>
+        </>
+      ) : null}
     </>
   );
 }
