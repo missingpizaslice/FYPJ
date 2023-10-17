@@ -38,6 +38,12 @@ const appReducer = (state = initialState, action) => {
         ...state,
         ...initialState,
       };
+    case types.AUTHENTICATE:
+      return {
+        ...state,
+        doctor: action.payload["doctor"] || {},
+        msg: action.payload["msg"],
+      };
     default:
       return state;
   }

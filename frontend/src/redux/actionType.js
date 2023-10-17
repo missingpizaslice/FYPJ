@@ -10,3 +10,4 @@ export const UPDATE_DOCTOR = "UPDATE_DOCTOR";
 export const GET_SINGLE_DOCTOR = "GET_SINGLE_DOCTOR";
 export const SET_MSG = "SET_MSG";
 export const SET_PATIENT_VALUE = "SET_PATIENT_VALUE";
+export const AUTHENTICATE = "AUTHENTICATE";

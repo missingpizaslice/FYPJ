@@ -15,8 +15,9 @@ recordsCollection = mongo.db.records
 
 # ========================================================================================================
 
-# Doctors CRUD
+# Staff Member CRUD
 
+# create a new staff member
 @app.route("/api/doctor", methods=["POST"])
 def createDoctor():
     nameRegex = r'^[a-zA-Z\s]+$'
@@ -65,7 +66,7 @@ def createDoctor():
     }).inserted_id
     return jsonify({"id": str(ObjectId(id)), "msg": "new doctor has been added successfully"})
     
-
+# get a list of all staff members
 @app.route("/api/doctor", methods=["GET"])
 def getArrayofDoctors():
     doctors = []
@@ -80,6 +81,29 @@ def getArrayofDoctors():
         })
     return jsonify(doctors)
 
+# authenticate a staff member on login
+@app.route("/api/authenticate", methods=["POST"])
+def authenticateDoctor():
+    doctor = doctorCollection.find_one({"email": request.json["email"]})
+    if doctor:
+        if doctor["password"] == request.json["password"]:
+            return jsonify({
+                "msg": "login successful",
+                "doctor": {
+                    "id": str(ObjectId(doctor["_id"])),
+                    "name": doctor["name"],
+                    "email": doctor["email"],
+                    "password": doctor["password"],
+                    "staffNumber": doctor["staffNumber"],
+                    "staffType": doctor["staffType"]
+                }
+            })
+        else:
+            return jsonify({"msg": "the password is incorrect"})
+    else:
+        return jsonify({"msg": "the account does not exist"})
+        
+# get staff members information by email
 @app.route("/api/doctor/<id>", methods=["GET"])
 def getdoctorbyemail(id):
     doctor = doctorCollection.find_one({"email": id})
@@ -117,6 +141,7 @@ def getdoctorbyid(id):
 #     doctorCollection.delete_one({"_id": ObjectId(id)})
 #     return jsonify({"msg": "doctor account deleted successfully"})
 
+# update staff member details
 @app.route("/api/doctor/<id>", methods=["PUT"])
 def updateDoctorDetails(id):
     doctorCollection.update_one({"_id": ObjectId(id)}, {"$set": {
@@ -132,6 +157,7 @@ def updateDoctorDetails(id):
 
 # patient CRUD
 
+# create a new patient
 @app.route("/api/patient", methods=["POST"])
 def createPatient():
     id = patientCollection.insert_one({
@@ -140,6 +166,7 @@ def createPatient():
     }).inserted_id
     return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following id: " + str(ObjectId(id)) + " to access the pain analysis system."})
 
+# get a list of all patients
 @app.route("/api/patient", methods=["GET"])
 def getArrayofPatients():
     patients = []
@@ -151,6 +178,7 @@ def getArrayofPatients():
         })
     return jsonify(patients)
 
+# get a list of patients by doctor id
 @app.route("/api/patient/<id>", methods=["GET"])
 def getPatientsbyDoctor(id):
     patients = []
@@ -162,6 +190,7 @@ def getPatientsbyDoctor(id):
         })
     return jsonify(patients)
 
+# get patient information by id
 @app.route("/api/patientOne/<id>", methods=["GET"])
 def getOnePatient(id):
     patient = patientCollection.find_one({"_id": ObjectId(id)})
@@ -177,6 +206,7 @@ def getOnePatient(id):
 #     patientCollection.delete_one({"_id": ObjectId(id)})
 #     return jsonify({"msg": "patient account deleted successfully"})
 
+# update patient details
 @app.route("/api/patient/<id>", methods=["PUT"])
 def updatePatientDetails(id):
     patientCollection.update_one({"_id": ObjectId(id)}, {"$set": {

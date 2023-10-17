@@ -28,6 +28,11 @@ const doctorGet = (doctors) => ({
   payload: doctors,
 });
 
+const doctorAuthenticated = (data) => ({
+  type: types.AUTHENTICATE,
+  payload: data,
+});
+
 export const setMessage = (msg) => ({
   type: types.SET_MSG,
   payload: msg,
@@ -39,6 +44,17 @@ export const searchPatient = (patients) => ({
 });
 
 // ==================== Actions ====================
+
+export const loginAuth = (login) => {
+  return function (dispatch) {
+    axios
+      .post(`${API}/api/authenticate`, login)
+      .then((resp) => {
+        dispatch(doctorAuthenticated(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+};
 
 export const addDoctor = (doctor) => {
   return function (dispatch) {
