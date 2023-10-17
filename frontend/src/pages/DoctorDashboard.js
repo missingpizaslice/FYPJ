@@ -100,6 +100,7 @@ export default function DoctorDashboard() {
 
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
+    setPage(1);
   };
 
   // modal styling

@@ -28,7 +28,7 @@ export default function DoctorLogin() {
 
   // clear browsers local storage when page loads
   useEffect(() => {
-    dispatch(setMessage(""))
+    dispatch(setMessage(""));
     setloginerror("");
     localStorage.clear();
   }, []);
@@ -45,43 +45,38 @@ export default function DoctorLogin() {
 
     // if it returns with the doctors information, proceed with the authentication process
     if (doctor.id != null) {
-      // this function authenticates the user
-      const authenticate = (doctorPasswordfromDB) => {
-        if (password !== doctorPasswordfromDB) {
-          setloginerror("Login failed please try again");
-          setLocalState(inital);
-          return;
-        } else {
-          setLocalState(inital);
-          setloginerror("");
-          console.log(doctor["id"]);
-          const doctorData = {
-            doctor_id: doctor["id"],
-            doctor_email: doctor["email"],
-            doctor_name: doctor["name"],
-            doctor_staffNumber: doctor["staffNumber"],
-            staffType: doctor["staffType"],
-          }
-          localStorage.setItem("doctorData", JSON.stringify(doctorData));
-          // localStorage.setItem("doctor_id", doctor["id"]);
-          // localStorage.setItem("doctor_email", doctor["email"]);
-          // localStorage.setItem("doctor_name", doctor["name"]);
-          // localStorage.setItem("doctor_staffNumber", doctor["staffNumber"]);
-          if (doctorType == "doctor") {
-            navigate("/doctorDashboard");
-          }
-          else {
-            navigate("/admindashboard");
-          }
-        }
-      };
-
       const doctorEmailfromDB = doctor.email;
       const doctorPasswordfromDB = doctor.password;
       const doctorType = doctor.staffType;
       authenticate(doctorEmailfromDB, doctorPasswordfromDB, doctorType);
     }
   }, [doctor]);
+
+  // this function authenticates the user
+  const authenticate = (doctorPasswordfromDB) => {
+    if (password !== doctorPasswordfromDB) {
+      setloginerror("Incorrect password. Please try again.");
+      setLocalState(inital);
+      return;
+    } else {
+      setLocalState(inital);
+      setloginerror("");
+      console.log(doctor["id"]);
+      const doctorData = {
+        doctor_id: doctor["id"],
+        doctor_email: doctor["email"],
+        doctor_name: doctor["name"],
+        doctor_staffNumber: doctor["staffNumber"],
+        staffType: doctor["staffType"],
+      };
+      localStorage.setItem("doctorData", JSON.stringify(doctorData));
+      if (doctor["staffType"] == "doctor") {
+        navigate("/doctorDashboard");
+      } else {
+        navigate("/admindashboard");
+      }
+    }
+  };
 
   // updates the values of local state variables with the data entered in by the user in the registration form
   const handleChange = (e) => {
@@ -126,7 +121,9 @@ export default function DoctorLogin() {
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
               Login
             </Typography>
-            <Typography component="p" color={"red"}>{loginerror}</Typography>
+            <Typography component="p" color={"red"}>
+              {loginerror}
+            </Typography>
             <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
                 Email

@@ -68,6 +68,7 @@ export default function AdminDashboard() {
 
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
+    setPage(1);
   };
 
   return (
