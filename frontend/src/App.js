@@ -1,29 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
-import Patient from './pages/Patient';
+import logo from "./logo.svg";
+import "./App.css";
+import Patient from "./pages/Patient";
 import * as ReactDOM from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+// pages
 import ErrorPage from "./pages/error404";
 import DoctorLogin from "./pages/DoctorLogin";
-import DoctorRegister from './pages/DoctorRegister';
-
+import DoctorRegister from "./pages/DoctorRegister";
+import RecordsDashboard from "./pages/RecordsDashboard";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import Homepage from "./pages/Homepage";
+import Form from "./pages/PredictForm";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Patient/>,
-    errorElement: <ErrorPage />,
+    path: "/PredictForm",
+    element: <Form />,
   },
   {
-    path: "/staffaccess",
+    path: "/recordsDashboard",
+    element: <RecordsDashboard />,
+  },
+  {
+    path: "/doctorLogin",
     element: <DoctorLogin />,
   },
   {
-    path: "/staffregister",
+    path: "/doctorRegistration",
     element: <DoctorRegister />,
+  },
+  {
+    path: "/doctorDashboard",
+    element: <DoctorDashboard />,
+  },
+  {
+    path: "/",
+    element: <Homepage />,
+    errorElement: <ErrorPage />,
   },
 ]);
 

@@ -1,18 +1,12 @@
-from flask import Flask, request, jsonify
-from flask_pymongo import PyMongo, ObjectId
-# from check import open_opencv_window
-from flask_cors import CORS
-import re
-
 import cv2
 import mediapipe as mp
 import numpy as np
 from transform_2d import est_similarity_trans, similarity_trans
 from keypoints_extract import keypoints_extract
-## library for inference
 
+## library for inference
+from app import createRecord
 import os
-import datetime
 import time
 import pandas as pd
 import torch
@@ -26,228 +20,7 @@ from sklearn.metrics import accuracy_score
 from modelbase import STA_LSTM as Net
 from sklearn.metrics import confusion_matrix
 
-app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/painanalysisdb'
-mongo = PyMongo(app)
-
-CORS(app)
-
-doctorCollection = mongo.db.doctors
-patientCollection = mongo.db.patients
-recordsCollection = mongo.db.records
-nameCollection = mongo.db.name
-
-# ========================================================================================================
-
-# Doctors CRUD
-
-@app.route("/api/doctor", methods=["POST"])
-def createDoctor():
-    nameRegex = r'^[a-zA-Z\s]+$'
-    emailRegex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    staffNumberRegex = r'^sn\d{5}$'
-    passwordRegex = r'^.{12,}$'
-
-    emailValid = True
-
-    if re.match(emailRegex, request.json["email"].lower()):
-        emailValid = True
-    else:
-        emailValid = False
-        return jsonify({"msg": "the email is invalid"})
-
-    if re.match(nameRegex , request.json["name"].lower()):
-        emailValid = True
-    else:
-        emailValid = False
-        return jsonify({"msg": "the name is invalid"})
-
-    if re.match(staffNumberRegex, request.json["staffNumber"].lower()):
-        emailValid = True
-    else:
-        emailValid = False
-        return jsonify({"msg": "the staff number is invalid"})
-        
-    if re.match(passwordRegex, request.json["password"]):
-        emailValid = True
-    else:
-        emailValid = False
-        return jsonify({"msg": "the password is invalid"})
-
-
-    if request.json["password"] != request.json["confirmPassword"]:
-        emailValid = False
-        return jsonify({"msg": "the passwords do not match"})
-        
-    if (emailValid):
-        id = doctorCollection.insert_one({
-        "name": request.json["name"].lower(),
-        "email": request.json["email"].lower(),
-        "password": request.json["password"].lower(),
-        "staffNumber": request.json["staffNumber"].lower(),
-        "staffType": request.json["staffType"].lower()
-    }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "new doctor has been added successfully"})
-    
-
-@app.route("/api/doctor", methods=["GET"])
-def getArrayofDoctors():
-    doctors = []
-    for doc in doctorCollection.find():
-        doctors.append({
-            "id": str(ObjectId(doc["_id"])),
-            "name": doc["name"],
-            "email": doc["email"],
-            "password": doc["password"],
-            "staffNumber": doc["staffNumber"],
-            "staffType": doc["staffType"]
-        })
-    return jsonify(doctors)
-
-@app.route("/api/doctor/<id>", methods=["GET"])
-def getdoctorbyemail(id):
-    doctor = doctorCollection.find_one({"email": id})
-    if doctor:
-        return jsonify({
-            "id": str(ObjectId(doctor["_id"])),
-            "name": doctor["name"],
-            "email": doctor["email"],
-            "password": doctor["password"],
-            "staffNumber": doctor["staffNumber"],
-            "staffType": doctor["staffType"]
-        })
-    else:
-        return jsonify({"msg": "the account does not exist"})
-
-# get doctor information by id
-@app.route("/api/doctorByID/<id>", methods=["GET"])
-def getdoctorbyid(id):
-    doctor = doctorCollection.find_one({"_id": ObjectId(id)})
-    if doctor:
-        return jsonify({
-            "id": str(ObjectId(doctor["_id"])),
-            "name": doctor["name"],
-            "email": doctor["email"],
-            "password": doctor["password"],
-            "staffNumber": doctor["staffNumber"],
-            "staffType": doctor["staffType"]
-        })
-    else:
-        return jsonify({"msg": "the account does not exist"})
-
-# temporarily disabled
-# @app.route("/api/doctors/<id>", methods=["DELETE"])
-# def deleteOneDoctor(id):
-#     doctorCollection.delete_one({"_id": ObjectId(id)})
-#     return jsonify({"msg": "doctor account deleted successfully"})
-
-@app.route("/api/doctor/<id>", methods=["PUT"])
-def updateDoctorDetails(id):
-    doctorCollection.update_one({"_id": ObjectId(id)}, {"$set": {
-        "name": request.json["name"],
-        "email": request.json["email"],
-        "password": request.json["password"],
-        "staffNumber": request.json["staffNumber"],
-        "staffType": request.json["staffType"]
-    }})
-    return jsonify({"msg": "doctor details updated successfully"})
-
-# ========================================================================================================
-
-# patient CRUD
-
-@app.route("/api/patient", methods=["POST"])
-def createPatient():
-    id = patientCollection.insert_one({
-        "doctorID": request.json["doctorID"],
-        "name": request.json["name"]
-    }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "new patient has been added successfully"})
-
-@app.route("/api/patient", methods=["GET"])
-def getArrayofPatients():
-    patients = []
-    for patient in patientCollection.find():
-        patients.append({
-            "id": str(ObjectId(patient["_id"])),
-            "doctorID": patient["doctorID"],
-            "name": patient["name"]
-        })
-    return jsonify(patients)
-
-@app.route("/api/patient/<id>", methods=["GET"])
-def getPatientsbyDoctor(id):
-    patients = []
-    for patient in patientCollection.find({"doctorID": id}):
-        patients.append({
-            "id": str(ObjectId(patient["_id"])),
-            "doctorID": patient["doctorID"],
-            "name": patient["name"]
-        })
-    return jsonify(patients)
-
-@app.route("/api/patientOne/<id>", methods=["GET"])
-def getOnePatient(id):
-    patient = patientCollection.find_one({"_id": ObjectId(id)})
-    return jsonify({
-        "id": str(ObjectId(patient["_id"])),
-        "doctorID": patient["doctorID"],
-        "name": patient["name"]
-    })
-
-# temporarily disabled
-# @app.route("/api/patient/<id>", methods=["DELETE"])
-# def deleteOnePatient(id):
-#     patientCollection.delete_one({"_id": ObjectId(id)})
-#     return jsonify({"msg": "patient account deleted successfully"})
-
-@app.route("/api/patient/<id>", methods=["PUT"])
-def updatePatientDetails(id):
-    patientCollection.update_one({"_id": ObjectId(id)}, {"$set": {
-        "doctorID": request.json["doctorID"],
-        "name": request.json["name"]
-    }})
-    return jsonify({"msg": "patient details updated successfully"})
-
-# ========================================================================================================
-
-def createRecord(username, activity,duration,text,current_time):
-    id = recordsCollection.insert_one({
-        "patientID": username,
-        "activity":activity,
-        "duration":duration,
-        "painlevel": text,
-        "datetime": current_time
-        # "activity": request.json["activity"],
-    }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "new record has been added successfully"})
-
-@app.route("/api/record/<id>", methods=["GET"])
-def getArrayofRecords(id):
-    records = []
-    for record in recordsCollection.find({"patientID": id}):
-        records.append({
-            "id": str(ObjectId(record["_id"])),
-            "patientID": record["patientID"],
-            "datetime": record["datetime"],
-            "painlevel": record["painlevel"],
-            "activity": record["activity"],
-            "duration": record["duration"],
-        })
-    return jsonify(records)
-
-@app.route('/start_opencv',methods=['POST'])
-def start_opencv():
-    username = request.json["name"]
-    activity = request.json["activity"]
-    duration = request.json["duration"]
-    print(username)
-    # activity = request.json["activity"]
-    open_opencv_window(username,activity,duration)
-    # return Response(open_opencv_window(username), mimetype='multipart/x-mixed-replace; boundary=frame')
-    return 'Done'
-
-def open_opencv_window(username,activity,duration):
+def open_opencv_window(username):
     base = 2
     IN_DIM = int(936 * 60 / base)  # always use 60 / base number to get the final datapoints, e.g. 60 / base_2 = 30
     SEQUENCE_LENGTH = int(60 / base)  # 2
@@ -256,7 +29,7 @@ def open_opencv_window(username,activity,duration):
     LSTM_HIDDEN_DIM = 64  # 32 #64
 
     OUT_DIM = 3
-    text = "No pain"
+    text = "No Pain"
 
     LEARNING_RATE = 0.05  # learning rate
     WEIGHT_DECAY = 1e-6  # not used as the number of epoches is only 8 or 10
@@ -269,7 +42,7 @@ def open_opencv_window(username,activity,duration):
         training_required = False
     except:
         print("your profile is not found in the system, a personalized calibration is required")
-        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+        net = ('C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
         training_required = True
 
 
@@ -335,12 +108,13 @@ def open_opencv_window(username,activity,duration):
     # train_ground truth nx3 array 100 pain, 001 no pain
 
     if training_required:
-        cv2.imshow("pain", 3)
         train_data_pain = keypoints_extract('Pain', 8)
-        cv2.imshow("No pain",3)
+        print("pain",train_data_pain)
         train_data_nopain = keypoints_extract('No pain', 8)
+        print("no pain",train_data_nopain)
 
-        train_data = np.vstack([train_data_pain, train_data_nopain])
+        train_data = np.vstack([list(train_data_pain), list(train_data_nopain)])
+        print("train_data",train_data)
         train_data = train_data.astype(np.float32)
         train_data = torch.from_numpy(train_data)
         inputs = Variable(train_data)
@@ -427,7 +201,7 @@ def open_opencv_window(username,activity,duration):
             # print(i)
             success, image = cap.read()
             if not success:
-                break
+                continue
                 print("Ignoring empty camera frame.")
                 # If loading a video, use 'break' instead of 'continue'.
                 # continue
@@ -516,20 +290,13 @@ def open_opencv_window(username,activity,duration):
                         (0, 0, 255),  # B, G, R
                         2,
                         cv2.LINE_4)
-            current_time = datetime.datetime.now()
-            createRecord(username, activity,duration,text,current_time)
+            
+            createRecord(text)
             cv2.namedWindow("AI pain detection - NYP", cv2.WINDOW_NORMAL)
-            # cv2.setWindowProperty('AI pain detection - NYP', cv2.WND_PROP_TOPMOST, 1)
-            # cv2.setWindowProperty('AI pain detection - NYP', cv2.WINDOW_FULLSCREEN, cv2.WND_PROP_TOPMOST)
+            cv2.setWindowProperty('AI pain detection - NYP', cv2.WND_PROP_TOPMOST, 1)
+            cv2.setWindowProperty('AI pain detection - NYP', cv2.WINDOW_FULLSCREEN, cv2.WND_PROP_TOPMOST)
 
             cv2.imshow('AI pain detection - NYP', image)
             if cv2.waitKey(5) & 0xFF == 27:
                 break
     cap.release()
-    cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-

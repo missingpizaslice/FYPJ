@@ -1,30 +1,94 @@
-import React, { useState } from "react";
+// library imports
+import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
+import { useDispatch, useSelector } from "react-redux";
+import { loadsingleDoctor } from "../redux/action";
+import { useNavigate } from "react-router-dom";
 
+// Material UI imports
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { FormControl, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 
+// this components initial state
 const inital = {
   email: "",
   password: "",
 };
 
 export default function DoctorLogin() {
-  const [state, setstate] = useState(inital);
-  const { email, password } = state;
+  // declare variables
+  const [localState, setLocalState] = useState(inital);
+  const [loginerror, setloginerror] = useState("");
+  const { email, password } = localState;
+  const dispatch = useDispatch();
+  const doctor = useSelector((state) => state.data.doctor);
+  const navigate = useNavigate();
 
+  // clear browsers local storage when page loads
+  useEffect(() => {
+    setloginerror("");
+    localStorage.clear();
+  }, []);
+
+  // this function displays an error message if there is a problem with the signing in.
+  useEffect(() => {
+    setloginerror("");
+    // if the authentication process returns an error, display the error
+    if (doctor.msg != null) {
+      setloginerror(doctor.msg);
+      setLocalState(inital);
+      return;
+    }
+
+    // if it returns with the doctors information, proceed with the authentication process
+    if (doctor.id != null) {
+      // this function authenticates the user
+      const authenticate = (doctorPasswordfromDB) => {
+        if (password !== doctorPasswordfromDB) {
+          setloginerror("Login failed please try again");
+          setLocalState(inital);
+          return;
+        } else {
+          setLocalState(inital);
+          setloginerror("");
+          console.log(doctor["id"]);
+          localStorage.setItem("doctor_id", doctor["id"]);
+          localStorage.setItem("doctor_email", doctor["email"]);
+          localStorage.setItem("doctor_name", doctor["name"]);
+          localStorage.setItem("doctor_staffNumber", doctor["staffNumber"]);
+          if (doctorType == "Doctor") {
+            navigate("/doctorDashboard");
+          }
+          else {
+            navigate("/adminDashboard");
+          }
+        }
+      };
+
+      const doctorEmailfromDB = doctor.email;
+      const doctorPasswordfromDB = doctor.password;
+      const doctorType = doctor.staffType;
+      authenticate(doctorEmailfromDB, doctorPasswordfromDB, doctorType);
+    }
+  }, [doctor]);
+
+  // updates the values of local state variables with the data entered in by the user in the registration form
   const handleChange = (e) => {
     let { name, value } = e.target;
-    setstate({ ...state, [name]: value });
+    setLocalState({ ...localState, [name]: value });
   };
 
+  // this function attempts to retrieve the users data from the database for authentication.
+  // returns the user data if the user is inside the database and an error message if user is not
   const handlesubmit = (e) => {
     e.preventDefault();
-    console.log(state);
+    setloginerror("");
+    dispatch(loadsingleDoctor(email));
   };
 
+  // React component that returns the login page
   return (
     <>
       <PatientNav />
@@ -53,7 +117,8 @@ export default function DoctorLogin() {
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
               Login
             </Typography>
-            <FormControl fullWidth="true" margin="normal">
+            <Typography component="p">{loginerror}</Typography>
+            <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
                 Email
               </Typography>
@@ -67,7 +132,7 @@ export default function DoctorLogin() {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl fullWidth="true" margin="normal">
+            <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
                 password
               </Typography>
@@ -85,7 +150,7 @@ export default function DoctorLogin() {
               <Button
                 type="submit"
                 variant="contained"
-                fullWidth="true"
+                fullWidth={true}
                 sx={{ marginTop: "20px" }}
               >
                 Log in

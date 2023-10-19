@@ -12,10 +12,27 @@ const initialState = {
 const appReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_DOCTOR:
+    case types.ADD_PATIENT:
       return {
         ...state,
         msg: action.payload,
       };
+    case types.GET_SINGLE_DOCTOR:
+      return {
+        ...state,
+        doctor: action.payload,
+      }
+    case types.GET_PATIENTS:
+      return {
+        ...state,
+        patients: action.payload,
+      }
+    case types.GET_RECORDS:
+      return{
+        ...state,
+          records: action.payload,
+      }
+
     default:
       return state;
   }
