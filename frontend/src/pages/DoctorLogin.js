@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useDispatch, useSelector } from "react-redux";
-import { loadsingleDoctor } from "../redux/action";
+import { loadsingleDoctor, loginAuth, setMessage } from "../redux/action";
 import { useNavigate } from "react-router-dom";
 
 // Material UI imports
@@ -23,11 +23,12 @@ export default function DoctorLogin() {
   const [loginerror, setloginerror] = useState("");
   const { email, password } = localState;
   const dispatch = useDispatch();
-  const doctor = useSelector((state) => state.data.doctor);
+  const { doctor, msg } = useSelector((state) => state.data);
   const navigate = useNavigate();
 
   // clear browsers local storage when page loads
   useEffect(() => {
+    dispatch(setMessage(""));
     setloginerror("");
     localStorage.clear();
   }, []);
@@ -36,43 +37,28 @@ export default function DoctorLogin() {
   useEffect(() => {
     setloginerror("");
     // if the authentication process returns an error, display the error
-    if (doctor.msg != null) {
-      setloginerror(doctor.msg);
+    if (msg == "login successful") {
+      dispatch(setMessage(""));
+      setLocalState(inital);
+      const doctorData = {
+        doctor_id: doctor["id"],
+        doctor_email: doctor["email"],
+        doctor_name: doctor["name"],
+        doctor_staffNumber: doctor["staffNumber"],
+        staffType: doctor["staffType"],
+      };
+      localStorage.setItem("doctorData", JSON.stringify(doctorData));
+      if (doctor["staffType"] == "doctor") {
+        navigate("/doctorDashboard");
+      } else {
+        navigate("/admindashboard");
+      }
+    } else {
+      setloginerror(msg);
       setLocalState(inital);
       return;
     }
-
-    // if it returns with the doctors information, proceed with the authentication process
-    if (doctor.id != null) {
-      // this function authenticates the user
-      const authenticate = (doctorPasswordfromDB) => {
-        if (password !== doctorPasswordfromDB) {
-          setloginerror("Login failed please try again");
-          setLocalState(inital);
-          return;
-        } else {
-          setLocalState(inital);
-          setloginerror("");
-          console.log(doctor["id"]);
-          localStorage.setItem("doctor_id", doctor["id"]);
-          localStorage.setItem("doctor_email", doctor["email"]);
-          localStorage.setItem("doctor_name", doctor["name"]);
-          localStorage.setItem("doctor_staffNumber", doctor["staffNumber"]);
-          if (doctorType == "Doctor") {
-            navigate("/doctorDashboard");
-          }
-          else {
-            navigate("/adminDashboard");
-          }
-        }
-      };
-
-      const doctorEmailfromDB = doctor.email;
-      const doctorPasswordfromDB = doctor.password;
-      const doctorType = doctor.staffType;
-      authenticate(doctorEmailfromDB, doctorPasswordfromDB, doctorType);
-    }
-  }, [doctor]);
+  }, [msg]);
 
   // updates the values of local state variables with the data entered in by the user in the registration form
   const handleChange = (e) => {
@@ -84,9 +70,45 @@ export default function DoctorLogin() {
   // returns the user data if the user is inside the database and an error message if user is not
   const handlesubmit = (e) => {
     e.preventDefault();
-    setloginerror("");
-    dispatch(loadsingleDoctor(email));
+
+    var valiated = true;
+
+    if (email == "" || password == "") {
+      setloginerror("email or password field empty");
+      setLocalState(inital);
+      valiated = false;
+    }
+
+    if (valiated == true) {
+      dispatch(loginAuth(localState));
+    }
   };
+
+  // this function authenticates the user
+  // const authenticate = (doctorPasswordfromDB) => {
+  //   if (password !== doctorPasswordfromDB) {
+  //     setloginerror("Incorrect password. Please try again.");
+  //     setLocalState(inital);
+  //     return;
+  //   } else {
+  //     setLocalState(inital);
+  //     setloginerror("");
+  //     console.log(doctor["id"]);
+  //     const doctorData = {
+  //       doctor_id: doctor["id"],
+  //       doctor_email: doctor["email"],
+  //       doctor_name: doctor["name"],
+  //       doctor_staffNumber: doctor["staffNumber"],
+  //       staffType: doctor["staffType"],
+  //     };
+  //     localStorage.setItem("doctorData", JSON.stringify(doctorData));
+  //     if (doctor["staffType"] == "doctor") {
+  //       navigate("/doctorDashboard");
+  //     } else {
+  //       navigate("/admindashboard");
+  //     }
+  //   }
+  // };
 
   // React component that returns the login page
   return (
@@ -117,7 +139,9 @@ export default function DoctorLogin() {
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
               Login
             </Typography>
-            <Typography component="p">{loginerror}</Typography>
+            <Typography component="p" color={"red"}>
+              {loginerror}
+            </Typography>
             <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
                 Email

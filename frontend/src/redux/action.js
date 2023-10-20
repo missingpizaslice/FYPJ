@@ -21,14 +21,44 @@ const getDoctor = (doctor) => ({
 const patientGet = (patients) => ({
   type: types.GET_PATIENTS,
   payload: patients,
-})
+});
+
+const doctorGet = (doctors) => ({
+  type: types.GET_DOCTOR,
+  payload: doctors,
+});
+
+const doctorAuthenticated = (data) => ({
+  type: types.AUTHENTICATE,
+  payload: data,
+});
+
+export const setMessage = (msg) => ({
+  type: types.SET_MSG,
+  payload: msg,
+});
+
+export const searchPatient = (patients) => ({
+  type: types.SET_PATIENT_VALUE,
+  payload: patients,
+});
 
 const RecordsGet = (records) => ({
   type: types.GET_RECORDS,
   payload: records,
 })
-
 // ==================== Actions ====================
+
+export const loginAuth = (login) => {
+  return function (dispatch) {
+    axios
+      .post(`${API}/api/authenticate`, login)
+      .then((resp) => {
+        dispatch(doctorAuthenticated(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+};
 
 export const addDoctor = (doctor) => {
   return function (dispatch) {
@@ -73,7 +103,7 @@ export const getPatients = (id) => {
       })
       .catch((err) => console.log(err));
   };
-}
+};
 
 
 export const addPatientModel = (name) => {
@@ -94,4 +124,4 @@ export const getRecords = (id) => {
       })
       .catch((err) => console.log(err));
   };
-}
+};

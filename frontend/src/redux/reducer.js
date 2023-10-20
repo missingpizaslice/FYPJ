@@ -22,7 +22,14 @@ const appReducer = (state = initialState, action) => {
         ...state,
         doctor: action.payload,
       }
+      ;
+    case types.GET_DOCTOR:
+      return {
+        ...state,
+        doctors: action.payload,
+      };
     case types.GET_PATIENTS:
+    case types.SET_PATIENT_VALUE:
       return {
         ...state,
         patients: action.payload,
@@ -33,6 +40,18 @@ const appReducer = (state = initialState, action) => {
           records: action.payload,
       }
 
+      ;
+    case types.SET_MSG:
+      return {
+        ...state,
+        ...initialState,
+      };
+    case types.AUTHENTICATE:
+      return {
+        ...state,
+        doctor: action.payload["doctor"] || {},
+        msg: action.payload["msg"],
+      };
     default:
       return state;
   }

@@ -6,6 +6,15 @@ import Toolbar from "@mui/material/Toolbar";
 import { Typography } from "@mui/material";
 
 export default function PatientNav() {
+  const isLoggedIn = !!localStorage.getItem("doctorData");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear user data from local storage or perform any necessary logout actions
+    navigate("/doctorLogin");
+    localStorage.removeItem("userData");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ background: "#2668c3" }}>

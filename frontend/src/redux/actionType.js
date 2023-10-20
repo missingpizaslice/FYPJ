@@ -9,3 +9,6 @@ export const DELETE_DOCTOR = "DELETE_DOCTOR";
 export const UPDATE_DOCTOR = "UPDATE_DOCTOR";
 export const GET_SINGLE_DOCTOR = "GET_SINGLE_DOCTOR";
 export const GET_RECORDS = "GET_RECORDS"
+export const SET_MSG = "SET_MSG";
+export const SET_PATIENT_VALUE = "SET_PATIENT_VALUE";
+export const AUTHENTICATE = "AUTHENTICATE";
