@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useDispatch, useSelector } from "react-redux";
-import { loadsingleDoctor, setMessage } from "../redux/action";
+import { loadsingleDoctor } from "../redux/action";
 import { useNavigate } from "react-router-dom";
 
 // Material UI imports
@@ -28,7 +28,6 @@ export default function DoctorLogin() {
 
   // clear browsers local storage when page loads
   useEffect(() => {
-    dispatch(setMessage(""))
     setloginerror("");
     localStorage.clear();
   }, []);
@@ -55,22 +54,15 @@ export default function DoctorLogin() {
           setLocalState(inital);
           setloginerror("");
           console.log(doctor["id"]);
-          const doctorData = {
-            doctor_id: doctor["id"],
-            doctor_email: doctor["email"],
-            doctor_name: doctor["name"],
-            doctor_staffNumber: doctor["staffNumber"],
-          }
-          localStorage.setItem("doctorData", JSON.stringify(doctorData));
-          // localStorage.setItem("doctor_id", doctor["id"]);
-          // localStorage.setItem("doctor_email", doctor["email"]);
-          // localStorage.setItem("doctor_name", doctor["name"]);
-          // localStorage.setItem("doctor_staffNumber", doctor["staffNumber"]);
-          if (doctorType == "doctor") {
+          localStorage.setItem("doctor_id", doctor["id"]);
+          localStorage.setItem("doctor_email", doctor["email"]);
+          localStorage.setItem("doctor_name", doctor["name"]);
+          localStorage.setItem("doctor_staffNumber", doctor["staffNumber"]);
+          if (doctorType == "Doctor") {
             navigate("/doctorDashboard");
           }
           else {
-            navigate("/admindashboard");
+            navigate("/adminDashboard");
           }
         }
       };

@@ -7,22 +7,23 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/error404";
 import DoctorLogin from "./pages/DoctorLogin";
 import DoctorRegister from "./pages/DoctorRegister";
+import RecordsDashboard from "./pages/RecordsDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import Homepage from "./pages/Homepage";
-import AdminDashboard from "./pages/AdminDashboard";
+import Form from "./pages/PredictForm";
 
 const router = createBrowserRouter([
   {
-    path: "/patient",
-    element: <Patient />,
+    path: "/PredictForm",
+    element: <Form />,
+  },
+  {
+    path: "/recordsDashboard",
+    element: <RecordsDashboard />,
   },
   {
     path: "/doctorLogin",
     element: <DoctorLogin />,
-  },
-  {
-    path: "/admindashboard",
-    element: <AdminDashboard />,
   },
   {
     path: "/doctorRegistration",

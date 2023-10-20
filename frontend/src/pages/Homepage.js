@@ -74,7 +74,7 @@ function Homepage() {
                 marginTop: "20px",
               }}
               fullWidth={true}
-              onClick={() => navigate("/patient")}
+              onClick={() => navigate("/PredictForm")}
             >
               <Typography component="h1" variant="h5" align="left">
                 Patient

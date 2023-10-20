@@ -75,11 +75,4 @@ git add *
 git commit -m "your message"
 git push
 
-cd backend
-venv/Scripts/activate
-python src/app.py
-
-cd frontend
-npm start
-
 git checkout -b "<name of your branch>"

@@ -23,14 +23,9 @@ const patientGet = (patients) => ({
   payload: patients,
 })
 
-const doctorGet = (doctors) => ({
-  type: types.GET_DOCTOR,
-  payload: doctors,
-})
-
-export const setMessage = (msg) => ({
-  type: types.SET_MSG,
-  payload: msg,
+const RecordsGet = (records) => ({
+  type: types.GET_RECORDS,
+  payload: records,
 })
 
 // ==================== Actions ====================
@@ -80,12 +75,22 @@ export const getPatients = (id) => {
   };
 }
 
-export const getDoctors = () => {
+
+export const addPatientModel = (name) => {
+  return function (){
+    console.log(name)
+    axios
+      .post(`${API}/start_opencv`, name)
+      .catch((err) => console.log(err));
+  };
+};
+
+export const getRecords = (id) => {
   return function (dispatch) {
     axios
-      .get(`${API}/api/doctor`)
+      .get(`${API}/api/record/${id}`)
       .then((resp) => {
-        dispatch(doctorGet(resp.data));
+        dispatch(RecordsGet(resp.data));
       })
       .catch((err) => console.log(err));
   };
