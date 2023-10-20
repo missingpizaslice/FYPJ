@@ -20,6 +20,7 @@ import { CircularProgress, Grid } from "@mui/material";
 import { FormControl, TextField } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Pagination from "@mui/material/Pagination"
 
 const inital = {
   search: "",
@@ -61,10 +62,12 @@ export default function DoctorDashboard() {
       doctorData.staffType != "doctor"
     ) {
       navigate("/doctorLogin");
+      return;
     }
 
-    dispatch(getPatients(doctor_id));
-  }, []);
+    dispatch(getPatients(doctorData.doctor_id));
+  },[]);
+
 
   useEffect(() => {
     if (msg) {
@@ -87,7 +90,7 @@ export default function DoctorDashboard() {
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    const patientDetails = { name: patientName, doctorID: doctor_id };
+    const patientDetails = { name: patientName, doctorID: doctorData.doctor_id };
     setOpen(false);
     dispatch(addPatient(patientDetails));
   };

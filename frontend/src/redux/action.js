@@ -54,6 +54,7 @@ export const loginAuth = (login) => {
     axios
       .post(`${API}/api/authenticate`, login)
       .then((resp) => {
+        console.log(resp)
         dispatch(doctorAuthenticated(resp.data));
       })
       .catch((err) => console.log(err));
@@ -100,6 +101,17 @@ export const getPatients = (id) => {
       .get(`${API}/api/patient/${id}`)
       .then((resp) => {
         dispatch(patientGet(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
+export const getDoctors = () => {
+  return function (dispatch) {
+    axios
+      .get(`${API}/api/doctor`)
+      .then((resp) => {
+        dispatch(doctorGet(resp.data));
       })
       .catch((err) => console.log(err));
   };

@@ -11,6 +11,7 @@ import RecordsDashboard from "./pages/RecordsDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import Homepage from "./pages/Homepage";
 import Form from "./pages/PredictForm";
+import AdminDashboard from "./pages/AdminDashboard"
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/doctorLogin",
     element: <DoctorLogin />,
+  },
+  {
+    path: "/admindashboard",
+    element:<AdminDashboard />
   },
   {
     path: "/doctorRegistration",

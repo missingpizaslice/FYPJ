@@ -105,5 +105,7 @@ def keypoints_extract(painornot, nseconds):
             cv2.imshow('AI pain detection - NYP', image)
             if j == nseconds: ## only record nsecondsx2 seconds of video
                 break
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
         cap.release()
         return train_data

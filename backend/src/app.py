@@ -104,28 +104,6 @@ def getArrayofDoctors():
             "staffType": doc["staffType"]
         })
     return jsonify(doctors)
-
-# authenticate a staff member on login
-@app.route("/api/authenticate", methods=["POST"])
-def authenticateDoctor():
-    doctor = doctorCollection.find_one({"email": request.json["email"]})
-    if doctor:
-        if doctor["password"] == request.json["password"]:
-            return jsonify({
-                "msg": "login successful",
-                "doctor": {
-                    "id": str(ObjectId(doctor["_id"])),
-                    "name": doctor["name"],
-                    "email": doctor["email"],
-                    "password": doctor["password"],
-                    "staffNumber": doctor["staffNumber"],
-                    "staffType": doctor["staffType"]
-                }
-            })
-        else:
-            return jsonify({"msg": "the password is incorrect"})
-    else:
-        return jsonify({"msg": "the account does not exist"})
         
 # get staff members information by email
 
@@ -318,12 +296,12 @@ def open_opencv_window(username,activity,duration):
     USE_GPU = False
 
     try:
-        net =torch.load("C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        net =torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
         print("welcome back! "+ username)
         training_required = False
     except:
         print("your profile is not found in the system, a personalized calibration is required")
-        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
         training_required = True
 
 
@@ -438,7 +416,7 @@ def open_opencv_window(username,activity,duration):
 
 
 
-        torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
         text = "System calibration completed"
 
 
@@ -573,8 +551,8 @@ def open_opencv_window(username,activity,duration):
             current_time = datetime.datetime.now()
             createRecord(username, activity,duration,text,current_time)
             cv2.namedWindow("AI pain detection - NYP", cv2.WINDOW_NORMAL)
-            # cv2.setWindowProperty('AI pain detection - NYP', cv2.WND_PROP_TOPMOST, 1)
-            # cv2.setWindowProperty('AI pain detection - NYP', cv2.WINDOW_FULLSCREEN, cv2.WND_PROP_TOPMOST)
+            cv2.setWindowProperty('AI pain detection - NYP', cv2.WND_PROP_TOPMOST, 1)
+            cv2.setWindowProperty('AI pain detection - NYP', cv2.WINDOW_FULLSCREEN, cv2.WND_PROP_TOPMOST)
 
             cv2.imshow('AI pain detection - NYP', image)
             if cv2.waitKey(5) & 0xFF == 27:
