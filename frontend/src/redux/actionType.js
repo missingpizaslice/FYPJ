@@ -12,3 +12,4 @@ export const GET_RECORDS = "GET_RECORDS"
 export const SET_MSG = "SET_MSG";
 export const SET_PATIENT_VALUE = "SET_PATIENT_VALUE";
 export const AUTHENTICATE = "AUTHENTICATE";
+export const  auth_model = "auth_model"

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { addPatientModel } from "../redux/action";
 import PatientNav from "../components/PatientNav";
 import {Form} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -11,15 +12,31 @@ import { Container } from "@mui/system";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import { FormHelperText } from '@mui/material';
+
 
 function YourForm() {
-  // const [loginerror, setloginerror] = useState("");
+  const [error, setError] = useState();
+  const [loginerror, setloginerror] = useState("");
   const [name, setName] = useState();
   const [activity, setActivity] = useState();
   const [duration, setDuration] = useState();
+  const { msg } = useSelector((state) => state.data);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-
+  useEffect(() => {
+    setloginerror("");
+    // Check if the authentication process returns an error
+    if (msg === "the account does not exist") {
+      setloginerror(msg);
+    }
+    else {
+      setloginerror("");
+      // navigate("/");
+    }
+  }, [msg]);
+  
   const handleNameChange = (e) => {
     setName(e.target.value);
   };
@@ -77,10 +94,10 @@ function YourForm() {
         <Typography component="h1" variant="h4">
           Details
         </Typography>
-        {/* <Typography component="p">{loginerror}</Typography> */}
-        <FormControl fullWidth style={{marginTop: "16px",maxWidth: 500 }}>
+        <FormControl variant="outlined" fullWidth style={{marginTop: "16px",maxWidth: 500 }}>
                     <Form.Group>
                         <Box className="inputs" sx={{width: 500,maxWidth: '100%',marginTop: "16px"}}><TextField fullWidth 
+                        
           type="text"
           label="Name"
           id="name"
@@ -88,6 +105,7 @@ function YourForm() {
           value={name}
           onChange={handleNameChange}
                         />
+        <FormHelperText error>{loginerror}</FormHelperText>
                         </Box>
                     </Form.Group>
                     </FormControl>
@@ -135,47 +153,6 @@ function YourForm() {
     </Box>
   </Container>
   </>
-    // <div className='body-pk'>
-    // <div className="container-pk">
-    //   <form className="form-pk" onSubmit={handleSubmit}>
-    //     <h2>Details</h2>
-    //     <input
-    //       type="text"
-    //       id="name"
-    //       placeholder='Name'
-    //       name="Name"
-    //       value={name}
-    //       onChange={handleNameChange}
-    //       required
-    //     />
-    //       <input
-    //       type="text"
-    //       id="activity"
-    //       name="activity"
-    //       placeholder='Activity'
-    //       value={activity}
-    //       onChange={handleActivityChange}
-    //       required
-    //     />
-    //     <select
-    //     id="duration"
-    //     name="duration"
-    //     value={duration}
-    //     onChange={handleDurationChange}
-    //   >
-    //     <option value="" disabled selected>Select a duration</option>
-    //     <option value="1-3 hours">1-3 hour</option>
-    //     <option value="3-5 hours">3-5 hours</option>
-    //     <option value="6-9 hours">6-9 hours</option>
-    //     <option value=">9 hours"> more than 9 hours</option>
-    //     <option value="None">None</option>
-    //   </select>
-    //     <div className="center-button-pk">
-    //       <button type="submit">Enter</button>
-    //     </div>
-    //   </form>
-    // </div>
-    // </div>
   );
 }
 

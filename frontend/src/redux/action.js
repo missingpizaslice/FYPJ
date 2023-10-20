@@ -8,6 +8,12 @@ const doctorAdded = (msg) => ({
   payload: msg,
 });
 
+const auth_msg_model = (msg) => ({
+  type: types.auth_model,
+  payload: msg,
+});
+
+
 const patientAdded = (msg) => ({
   type: types.ADD_PATIENT,
   payload: msg,
@@ -119,10 +125,15 @@ export const getDoctors = () => {
 
 
 export const addPatientModel = (name) => {
-  return function (){
+  return function (dispatch){
     console.log(name)
     axios
       .post(`${API}/start_opencv`, name)
+      .then((resp) => {
+        if (resp.data.msg) {
+        dispatch(auth_msg_model(resp.data.msg));
+        }
+      })
       .catch((err) => console.log(err));
   };
 };
