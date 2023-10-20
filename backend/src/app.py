@@ -271,13 +271,14 @@ def getArrayofRecords(id):
 @app.route('/start_opencv',methods=['POST'])
 def start_opencv():
     username = request.json["name"]
-    activity = request.json["activity"]
-    duration = request.json["duration"]
-    print(username)
-    # activity = request.json["activity"]
-    open_opencv_window(username,activity,duration)
+    patient_name = patientCollection.find_one({"_id":ObjectId(username)})
+    if patient_name:
+        activity = request.json["activity"]
+        duration = request.json["duration"]
+        open_opencv_window(username,activity,duration)
     # return Response(open_opencv_window(username), mimetype='multipart/x-mixed-replace; boundary=frame')
-    return 'Done'
+    else:
+        return jsonify({"msg": "the account does not exist"})
 
 def open_opencv_window(username,activity,duration):
     base = 2
