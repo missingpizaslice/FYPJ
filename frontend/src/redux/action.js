@@ -111,3 +111,14 @@ export const getDoctors = () => {
       .catch((err) => console.log(err));
   };
 };
+
+export const passwordUpdate = (data) => {
+  return function (dispatch) {
+    axios
+      .post(`${API}/api/updatePassword`, data)
+      .then((resp) => {
+        dispatch(patientAdded(resp.data.msg));
+      })
+      .catch((err) => console.log(err));
+  };
+};
