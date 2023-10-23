@@ -52,7 +52,7 @@ def createDoctor():
         return jsonify({"msg": "the password is invalid"})
 
 
-    if request.json["password"] != request.json["confirmPassword"]:
+    if request.json["password"] != request.json["confirmNewPassword"]:
         emailValid = False
         return jsonify({"msg": "the passwords do not match"})
         
@@ -141,17 +141,46 @@ def getdoctorbyid(id):
 #     doctorCollection.delete_one({"_id": ObjectId(id)})
 #     return jsonify({"msg": "doctor account deleted successfully"})
 
-# update staff member details
-@app.route("/api/doctor/<id>", methods=["PUT"])
-def updateDoctorDetails(id):
-    doctorCollection.update_one({"_id": ObjectId(id)}, {"$set": {
-        "name": request.json["name"],
-        "email": request.json["email"],
-        "password": request.json["password"],
-        "staffNumber": request.json["staffNumber"],
-        "staffType": request.json["staffType"]
-    }})
-    return jsonify({"msg": "doctor details updated successfully"})
+# update Doctor's password
+@app.route("/api/updatePassword", methods=["POST"])
+def updateDoctorDetails():
+
+    passwordRegex = r'^.{12,}$'
+
+    doctor = doctorCollection.find_one({"_id": ObjectId(request.json["doctor_id"])})
+
+    if doctor == None:
+        return jsonify({"msg": "Unknown error has occoured please try again later"})
+
+    emailValid = True
+
+    if request.json["currentPassword"] != doctor["password"]:
+        emailValid = False
+        return jsonify({"msg": "Current password is incorrect"})
+
+    if request.json["currentPassword"] == "" or request.json["newPassword"] == "" or request.json["confirmNewPassword"] == "":
+        emailValid = False
+        return jsonify({"msg": "Please fill all fields"})
+
+    if doctor["_id"] == request.json["newPassword"]:
+        emailValid = False
+        return jsonify({"msg": "New password cannot be the same as old password"})
+
+    if request.json["newPassword"] != request.json["confirmNewPassword"]:
+        emailValid = False
+        return jsonify({"msg": "passwords do not match"})
+
+    if re.match(passwordRegex, request.json["newPassword"]):
+        emailValid = True
+    else:
+        emailValid = False
+        return jsonify({"msg": "the password is invalid"})
+
+    if (emailValid):
+        doctorCollection.update_one({"_id": ObjectId(request.json["doctor_id"])}, {"$set": {
+            "password": request.json["newPassword"]
+        }})
+        return jsonify({"msg": "doctor details updated successfully"})
 
 # ========================================================================================================
 
