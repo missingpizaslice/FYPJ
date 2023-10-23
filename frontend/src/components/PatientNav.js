@@ -5,6 +5,8 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import { Button, Typography, Menu, MenuItem } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function PatientNav() {
   const isLoggedIn = !!localStorage.getItem("doctorData");
@@ -25,6 +27,20 @@ export default function PatientNav() {
     localStorage.removeItem("userData");
   };
 
+  const handleHomeClick = () => {
+    if (isLoggedIn) {
+      if (
+        JSON.parse(localStorage.getItem("doctorData"))["staffType"] == "admin"
+      ) {
+        navigate("/admindashboard");
+      } else {
+        navigate("/doctorDashboard");
+      }
+    } else {
+      navigate("/");
+    }
+  };
+
   const handleChangePassword = () => {
     // Add your change password logic here
     // For example, navigate to the change password page
@@ -36,7 +52,20 @@ export default function PatientNav() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          {isLoggedIn ? (
+            <Button onClick={handleHomeClick} color="inherit">
+              <HomeIcon />
+            </Button>
+          ) : (
+            <Button onClick={handleHomeClick} color="inherit">
+              <ArrowBackIcon />
+            </Button>
+          )}
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1 }}
+          >
             Pain Analysis
           </Typography>
           {isLoggedIn && (

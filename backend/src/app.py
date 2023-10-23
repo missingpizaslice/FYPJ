@@ -193,7 +193,7 @@ def createPatient():
         "doctorID": request.json["doctorID"],
         "name": request.json["name"]
     }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following id: " + str(ObjectId(id)) + " to access the pain analysis system."})
+    return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following id: " + str(ObjectId(id)) + " for them to access the pain analysis system."})
 
 # get a list of all patients
 @app.route("/api/patient", methods=["GET"])
