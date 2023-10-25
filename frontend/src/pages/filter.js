@@ -1,17 +1,20 @@
 // DropdownFilter.js
 import React from "react";
-import {Select,MenuItem} from '@mui/material';
 
-const DropdownFilter = ({ filterOptions, selectedFilter, onFilterChange }) => {
+const DropdownFilter = ({ options, selectedOption, onChange }) => {
   return (
-    <Select value={selectedFilter} onChange={onFilterChange}>
-      {filterOptions.map((option, index) => (
-        <MenuItem key={index} value={option}>
-          {option}
-        </MenuItem>
-      ))}
-    </Select>
+    <div>
+      <label htmlFor="filterDropdown">Select Filter:</label>
+      <select id="filterDropdown" value={selectedOption} onChange={onChange}>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 };
 
 export default DropdownFilter;
+
