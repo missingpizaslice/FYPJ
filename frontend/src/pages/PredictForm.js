@@ -16,7 +16,6 @@ import { FormHelperText } from '@mui/material';
 
 
 function YourForm() {
-  const [error, setError] = useState();
   const [loginerror, setloginerror] = useState("");
   const [name, setName] = useState();
   const [activity, setActivity] = useState();
@@ -30,10 +29,7 @@ function YourForm() {
     // Check if the authentication process returns an error
     if (msg === "the account does not exist") {
       setloginerror(msg);
-    }
-    else {
-      setloginerror("");
-      // navigate("/");
+      console.log(loginerror)
     }
   }, [msg]);
   
@@ -62,8 +58,8 @@ function YourForm() {
     setName("");
     setActivity("");
     setDuration("");
-    // You can use the 'name' variable to access the user's input
-    console.log('Name:', initial);
+
+    navigate("/submitPredForm")
   };
 
   return (
@@ -103,6 +99,7 @@ function YourForm() {
           id="name"
           name="Name"
           value={name}
+          error={Boolean(loginerror)}
           onChange={handleNameChange}
                         />
         <FormHelperText error>{loginerror}</FormHelperText>

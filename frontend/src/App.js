@@ -12,11 +12,26 @@ import DoctorDashboard from "./pages/DoctorDashboard";
 import Homepage from "./pages/Homepage";
 import Form from "./pages/PredictForm";
 import AdminDashboard from "./pages/AdminDashboard"
+import SubmitPredForm from "./pages/submitPredForm"; 
+import Dashboard from "./pages/fullDash"; 
+import BarChart from "./pages/pie";
 
 const router = createBrowserRouter([
   {
     path: "/PredictForm",
     element: <Form />,
+  },
+  {
+    path: "/Bar",
+    element: <BarChart />,
+  },
+  {
+    path: "/fullDash",
+    element: <Dashboard />,
+  },
+  {
+    path: "/submitPredForm",
+    element: <SubmitPredForm />,
   },
   {
     path: "/recordsDashboard",

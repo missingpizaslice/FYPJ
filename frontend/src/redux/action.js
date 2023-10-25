@@ -53,6 +53,13 @@ const RecordsGet = (records) => ({
   type: types.GET_RECORDS,
   payload: records,
 })
+
+const FramesGet = (frames) => ({
+  type: types.GET_FRAMES,
+  payload: frames,
+})
+
+
 // ==================== Actions ====================
 
 export const loginAuth = (login) => {
@@ -138,13 +145,27 @@ export const addPatientModel = (name) => {
   };
 };
 
+
 export const getRecords = (id) => {
   return function (dispatch) {
     axios
       .get(`${API}/api/record/${id}`)
       .then((resp) => {
+        console.log(resp.data)
         dispatch(RecordsGet(resp.data));
       })
       .catch((err) => console.log(err));
   };
 };
+
+export const getFrames = (data) => {
+  return function (dispatch) {
+    axios
+      .get(`${API}/start_opencv`,data)
+      .then((resp) => {
+        dispatch(FramesGet(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+};
+

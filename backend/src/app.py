@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,Response
 from flask_pymongo import PyMongo, ObjectId
 # from check import open_opencv_window
 from flask_cors import CORS
@@ -275,8 +275,8 @@ def start_opencv():
     if patient_name:
         activity = request.json["activity"]
         duration = request.json["duration"]
-        open_opencv_window(username,activity,duration)
-    # return Response(open_opencv_window(username), mimetype='multipart/x-mixed-replace; boundary=frame')
+        # open_opencv_window(username,activity,duration)
+        return Response(open_opencv_window(username,activity,duration), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return jsonify({"msg": "the account does not exist"})
 
@@ -507,14 +507,6 @@ def open_opencv_window(username,activity,duration):
                             i = 0  # count
                             # keypoints_frame = np.zeros(shape=(1, 28080)) # need not set to zero array, just reuse
                             break
-                    # print(lm.x)
-                    # print(lm.y )
-
-                    # for id, lm in enumerate(face_landmarks.landmark):
-                    # ih, iw, ic = img.shape
-                    # x, y, z = int(lm.x * iw), int(lm.y * ih), lm.z
-                    # frames_arr.append(lm.x)
-                    # frames_arr.append(lm.y)
 
                     mp_drawing.draw_landmarks(
                         image=image,
@@ -523,20 +515,6 @@ def open_opencv_window(username,activity,duration):
                         landmark_drawing_spec=None,
                         connection_drawing_spec=mp_drawing_styles
                         .get_default_face_mesh_tesselation_style())
-            #                mp_drawing.draw_landmarks(
-            #                    image=image,
-            #                    landmark_list=face_landmarks,
-            #                    connections=mp_face_mesh.FACEMESH_CONTOURS,
-            #                    landmark_drawing_spec=None,
-            #                    connection_drawing_spec=mp_drawing_styles
-            #                    .get_default_face_mesh_contours_style())
-            #                mp_drawing.draw_landmarks(
-            #                    image=image,
-            #                    landmark_list=face_landmarks,
-            #                    connections=mp_face_mesh.FACEMESH_IRISES,
-            #                    landmark_drawing_spec=None,
-            #                    connection_drawing_spec=mp_drawing_styles
-            #                    .get_default_face_mesh_iris_connections_style())
             # Flip the image horizontally for a selfie-view display.
             else:
                 text ='No face detected'
@@ -556,6 +534,12 @@ def open_opencv_window(username,activity,duration):
             cv2.setWindowProperty('AI pain detection - NYP', cv2.WINDOW_FULLSCREEN, cv2.WND_PROP_TOPMOST)
 
             cv2.imshow('AI pain detection - NYP', image)
+            # ret, buffer = cv2.imencode('.jpg', image)
+            # if not ret:
+            #     break
+            # frame = buffer.tobytes()
+            # yield (b'--frame\r\n'
+            #     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             if cv2.waitKey(5) & 0xFF == 27:
                 break
     cap.release()

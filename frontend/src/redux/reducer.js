@@ -47,6 +47,11 @@ const appReducer = (state = initialState, action) => {
         ...state,
         ...initialState,
       };
+      case types.GET_FRAMES:
+        return {
+          ...state,
+          videoFrame: action.frames,
+        }
     case types.AUTHENTICATE:
       return {
         ...state,
