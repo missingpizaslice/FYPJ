@@ -46,12 +46,23 @@ export default function DoctorUpdatePassword() {
     setupdatefinished(false);
     dispatch(setMessage(""));
     setloginerror("");
+
+    document.body.style.opacity = 0;
+    const fadeIn = () => {
+      let opacity = parseFloat(document.body.style.opacity);
+      if (opacity < 1) {
+        opacity += 0.02;
+        document.body.style.opacity = opacity;
+        requestAnimationFrame(fadeIn);
+      }
+    };
+    requestAnimationFrame(fadeIn);
   }, []);
 
   useEffect(() => {
     setloginerror("");
     // if the authentication process returns an error, display the error
-    if (msg == "doctor details updated successfully") {
+    if (msg == "password successfully updated") {
       console.log("successfully updated doctor details");
       setupdatefinished(true);
     } else {
@@ -136,7 +147,7 @@ export default function DoctorUpdatePassword() {
     <>
       <PatientNav />
 
-      <Container style={{ marginTop: "50px" }}>
+      <Container style={{ marginTop: "130px" }}>
         <Box
           sx={{
             marginTop: 8,

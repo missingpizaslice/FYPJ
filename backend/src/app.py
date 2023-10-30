@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo, ObjectId
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 import re
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 app.config['MONGO_URI'] = 'mongodb://localhost/painanalysisdb'
 mongo = PyMongo(app)
 
@@ -26,6 +28,8 @@ def createDoctor():
     passwordRegex = r'^.{12,}$'
 
     emailValid = True
+
+    # check if the email is already in use
 
     if re.match(emailRegex, request.json["email"].lower()):
         emailValid = True
@@ -52,15 +56,19 @@ def createDoctor():
         return jsonify({"msg": "the password is invalid"})
 
 
-    if request.json["password"] != request.json["confirmNewPassword"]:
+    if request.json["password"] != request.json["confirmPassword"]:
         emailValid = False
         return jsonify({"msg": "the passwords do not match"})
         
     if (emailValid):
+        
+        password = request.json["password"]
+        pw_hashed = bcrypt.generate_password_hash(password)
+
         id = doctorCollection.insert_one({
         "name": request.json["name"].lower(),
         "email": request.json["email"].lower(),
-        "password": request.json["password"].lower(),
+        "password": pw_hashed,
         "staffNumber": request.json["staffNumber"].lower(),
         "staffType": request.json["staffType"].lower()
     }).inserted_id
@@ -75,7 +83,6 @@ def getArrayofDoctors():
             "id": str(ObjectId(doc["_id"])),
             "name": doc["name"],
             "email": doc["email"],
-            "password": doc["password"],
             "staffNumber": doc["staffNumber"],
             "staffType": doc["staffType"]
         })
@@ -86,14 +93,20 @@ def getArrayofDoctors():
 def authenticateDoctor():
     doctor = doctorCollection.find_one({"email": request.json["email"]})
     if doctor:
-        if doctor["password"] == request.json["password"]:
+        
+        hashed_password = doctor["password"]
+        password = request.json["password"]
+        print(hashed_password)
+
+        match =  bcrypt.check_password_hash(hashed_password, password)
+
+        if match:
             return jsonify({
                 "msg": "login successful",
                 "doctor": {
                     "id": str(ObjectId(doctor["_id"])),
                     "name": doctor["name"],
                     "email": doctor["email"],
-                    "password": doctor["password"],
                     "staffNumber": doctor["staffNumber"],
                     "staffType": doctor["staffType"]
                 }
@@ -112,7 +125,6 @@ def getdoctorbyemail(id):
             "id": str(ObjectId(doctor["_id"])),
             "name": doctor["name"],
             "email": doctor["email"],
-            "password": doctor["password"],
             "staffNumber": doctor["staffNumber"],
             "staffType": doctor["staffType"]
         })
@@ -128,7 +140,6 @@ def getdoctorbyid(id):
             "id": str(ObjectId(doctor["_id"])),
             "name": doctor["name"],
             "email": doctor["email"],
-            "password": doctor["password"],
             "staffNumber": doctor["staffNumber"],
             "staffType": doctor["staffType"]
         })
@@ -154,7 +165,11 @@ def updateDoctorDetails():
 
     emailValid = True
 
-    if request.json["currentPassword"] != doctor["password"]:
+    hashed_password = doctor["password"]
+    password = request.json["currentPassword"]
+    print(hashed_password)
+
+    if not bcrypt.check_password_hash(hashed_password, password):
         emailValid = False
         return jsonify({"msg": "Current password is incorrect"})
 
@@ -177,10 +192,14 @@ def updateDoctorDetails():
         return jsonify({"msg": "the password is invalid"})
 
     if (emailValid):
+        
+        password = request.json["newPassword"]
+        pw_hashed = bcrypt.generate_password_hash(password)
+
         doctorCollection.update_one({"_id": ObjectId(request.json["doctor_id"])}, {"$set": {
-            "password": request.json["newPassword"]
+            "password": pw_hashed
         }})
-        return jsonify({"msg": "doctor details updated successfully"})
+        return jsonify({"msg": "password successfully updated"})
 
 # ========================================================================================================
 
