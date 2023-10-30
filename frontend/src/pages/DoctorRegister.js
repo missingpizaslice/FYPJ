@@ -40,6 +40,17 @@ export default function DoctorRegister() {
 
   useEffect(() => {
     dispatch(setMessage(""));
+
+    document.body.style.opacity = 0;
+    const fadeIn = () => {
+      let opacity = parseFloat(document.body.style.opacity);
+      if (opacity < 1) {
+        opacity += 0.02;
+        document.body.style.opacity = opacity;
+        requestAnimationFrame(fadeIn);
+      }
+    };
+    requestAnimationFrame(fadeIn);
   }, []);
 
   // this function closes the success pop up modal
@@ -93,7 +104,7 @@ export default function DoctorRegister() {
     <>
       <PatientNav />
 
-      <Container style={{ marginTop: "50px" }}>
+      <Container style={{ marginTop: "130px" }}>
         <Box
           sx={{
             marginTop: 8,
@@ -117,12 +128,10 @@ export default function DoctorRegister() {
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
               Register
             </Typography>
-            <FormControl
-              fullWidth={true}
-              margin="normal"
-              sx={{ color: "#d00000" }}
-            >
-              <Typography component="p">{registrationError}</Typography>
+            <Typography component="p" color={"red"}>
+              {registrationError}
+            </Typography>
+            <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
                 Email
               </Typography>

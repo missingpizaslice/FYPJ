@@ -31,6 +31,17 @@ export default function DoctorLogin() {
     dispatch(setMessage(""));
     setloginerror("");
     localStorage.clear();
+
+    document.body.style.opacity = 0;
+    const fadeIn = () => {
+      let opacity = parseFloat(document.body.style.opacity);
+      if (opacity < 1) {
+        opacity += 0.02;
+        document.body.style.opacity = opacity;
+        requestAnimationFrame(fadeIn);
+      }
+    };
+    requestAnimationFrame(fadeIn);
   }, []);
 
   // this function displays an error message if there is a problem with the signing in.
@@ -115,7 +126,7 @@ export default function DoctorLogin() {
     <>
       <PatientNav />
 
-      <Container style={{ marginTop: "50px" }}>
+      <Container style={{ marginTop: "130px" }}>
         <Box
           sx={{
             marginTop: 8,

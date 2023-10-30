@@ -13,6 +13,16 @@ export default function PatientNav() {
   const navigate = useNavigate();
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
+  const styles = {
+    navbar: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1,
+    },
+  };
+
   const handleOpenMenu = (event) => {
     setMenuAnchorEl(event.currentTarget);
   };
@@ -50,7 +60,7 @@ export default function PatientNav() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" style={styles.navbar}>
         <Toolbar>
           {isLoggedIn ? (
             <Button onClick={handleHomeClick} color="inherit">
@@ -61,11 +71,7 @@ export default function PatientNav() {
               <ArrowBackIcon />
             </Button>
           )}
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Pain Analysis
           </Typography>
           {isLoggedIn && (
