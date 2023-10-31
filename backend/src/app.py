@@ -244,29 +244,33 @@ def updatePatientDetails(id):
 # ========================================================================================================
 
 def createRecord(username, activity,duration,text,current_time):
-    id = recordsCollection.insert_one({
-        "patientID": username,
-        "activity":activity,
-        "duration":duration,
-        "painlevel": text,
-        "datetime": current_time
-        # "activity": request.json["activity"],
-    }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "new record has been added successfully"})
+        id = recordsCollection.insert_one({
+            "patientID": username,
+            "activity":activity,
+            "duration":duration,
+            "painlevel": text,
+            "datetime": current_time
+            # "activity": request.json["activity"],
+        }).inserted_id
+        return jsonify({"id": str(ObjectId(id)), "msg": "new record has been added successfully"})
 
 @app.route("/api/record/<id>", methods=["GET"])
 def getArrayofRecords(id):
     records = []
     for record in recordsCollection.find({"patientID": id}):
-        records.append({
-            "id": str(ObjectId(record["_id"])),
-            "patientID": record["patientID"],
-            "datetime": record["datetime"],
-            "painlevel": record["painlevel"],
-            "activity": record["activity"],
-            "duration": record["duration"],
-        })
+        # Check if the painlevel is not "no face detected" or "System calibration completed"
+        if record["painlevel"] not in ["No face detected", "System calibration completed"]:
+            records.append({
+                "id": str(ObjectId(record["_id"])),
+                "patientID": record["patientID"],
+                "datetime": record["datetime"],
+                "painlevel": record["painlevel"],
+                "activity": record["activity"],
+                "duration": record["duration"],
+            })
     return jsonify(records)
+
+
 
 @app.route('/start_opencv',methods=['POST'])
 def start_opencv():
@@ -437,7 +441,6 @@ def open_opencv_window(username,activity,duration):
     # cap = cv2.VideoCapture(filename)
     cap = cv2.VideoCapture(0)
 
-    drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
     evenodd = True  # a variable to remember if the frame is even or odd frame
     i = 0  # count of feature vector
     keypoints_frame = np.zeros(shape=(1, 28080))  # create a zeros numpy array to store keypoints corrdinates for 30 frames 468x2x30 = 28080

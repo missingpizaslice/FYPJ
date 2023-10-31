@@ -98,3 +98,48 @@ label {
   background-color: #4CAF50;
 }
 
+/* styles.css */
+
+/* styles.css */
+
+.container {
+  display: flex;
+  max-height: 800px;
+}
+
+.side-menu {
+  background-color: #333;
+  color: white;
+  width: 120px;
+  padding: 20px;
+}
+
+.side-menu ul {
+  list-style: none;
+  padding: 0;
+}
+
+.side-menu li {
+  cursor: pointer;
+  padding: 5px 0;
+}
+
+.content {
+  max-height: 800px;
+}
+
+.Bar {
+  min-width: 900px;
+  max-height: 700px
+}
+
+.pie {
+  max-width: 600px;
+  max-height: 400px
+}
+
+.date-filter {
+  position: absolute;
+  left:300%;
+}
+

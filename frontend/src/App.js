@@ -14,7 +14,7 @@ import Form from "./pages/PredictForm";
 import AdminDashboard from "./pages/AdminDashboard"
 import SubmitPredForm from "./pages/submitPredForm"; 
 import Dashboard from "./pages/fullDash"; 
-import BarChart from "./pages/pie";
+import Notes from "./pages/sidemenu"; 
 
 const router = createBrowserRouter([
   {
@@ -22,8 +22,8 @@ const router = createBrowserRouter([
     element: <Form />,
   },
   {
-    path: "/Bar",
-    element: <BarChart />,
+    path: "/note",
+    element: <Notes />,
   },
   {
     path: "/fullDash",
