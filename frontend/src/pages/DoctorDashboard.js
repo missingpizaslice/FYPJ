@@ -204,7 +204,7 @@ export default function DoctorDashboard() {
                           }}
                           onClick={() => {
                             sessionStorage.setItem('patient_id', patient.id);
-                            navigate("/fullDash")}
+                            navigate("/NewNotes")}
                           }
                         >
                           View Records

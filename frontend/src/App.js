@@ -15,11 +15,16 @@ import AdminDashboard from "./pages/AdminDashboard"
 import SubmitPredForm from "./pages/submitPredForm"; 
 import Dashboard from "./pages/fullDash"; 
 import Notes from "./pages/sidemenu"; 
+import NewNotes from "./pages/moderndash"; 
 
 const router = createBrowserRouter([
   {
     path: "/PredictForm",
     element: <Form />,
+  },
+  {
+    path: "/NewNotes",
+    element: <NewNotes />,
   },
   {
     path: "/note",

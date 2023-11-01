@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PatientNav from "../components/PatientNav";
 import { useNavigate } from "react-router-dom";
 import DropdownFilter from "./filter";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,7 +11,7 @@ import FormControl from '@mui/material/FormControl';
 import { Grid } from "@mui/material";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-
+import '../dash.css';
 const Notes = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -118,9 +119,6 @@ const Notes = () => {
       labels: xValues,
       datasets,
     };
-  } else {
-    // Handle the case where one or more of the variables are undefined or empty
-    console.error('Some data is missing.');
   }
   
   
@@ -175,32 +173,16 @@ const Notes = () => {
 
   return (
     <>
-    
+    <PatientNav/>
         <Box sx={{ width: '100%',height:'100%' }}>
-      <Grid container rowSpacing={1}>
-        <Grid className="side-menu" item xs={6} md={2}>
-        <CardActions>
-                          <Button
-                          size="medium"
-                          variant="contained"
-                          sx={{
-                            height: "35px",
-                          }}
-                          onClick={() => {
-                            navigate("/")}
-                          }
-                        >
-                          Logout
-                        </Button>
-                          </CardActions>
-        </Grid>
-        <Grid item xs={6} md={10}>
+      <Grid container rowSpacing={4}>
+        <Grid item xs={12} md={12}>
         <Container sx={{ paddingTop: '10px' }} fixed>
         <Box />
         <Grid className="content" container spacing={2}>
-        <Grid item xs={3}> 
-  <FormControl className="date-filter" variant="outlined" fullWidth>
-    <select
+        <Grid item xs={3} md={12}>   
+        <div className="date-filter">
+							        <select class="form-select form-select-sm ms-auto d-inline-flex w-auto"
   value={selectedDateRange}
   onChange={(e) => setSelectedDateRange(e.target.value)}
 >
@@ -208,11 +190,22 @@ const Notes = () => {
   <option value="Today">Today</option>
   <option value="LastWeek">Last Week</option>
 </select>
-  </FormControl>
+</div>
 </Grid>
-  <Grid item xs={12}>
+<Grid xs={12}>
     <Box>
-    <div style={{ height: '250px' }}>
+    <div class="app-card app-card-chart h-100 shadow-sm">
+					        <div class="app-card-header p-3">
+						        <div class="row justify-content-between align-items-center">
+							        <div class="col-auto">
+						                <h4 class="app-card-title">Overall Pain Distribution</h4>
+							        </div>
+							        <div class="col-auto">
+							        </div>
+						        </div>
+					        </div>
+					        <div class="app-card-body p-3">
+                  <div style={{ height: '250px' }}>
   <Bar
     data={bardata}
     options={{
@@ -229,11 +222,22 @@ const Notes = () => {
     }}
   />
 </div>
-
+					        </div>
+				        </div>
           </Box>
   </Grid>
   <Grid className="bar" item xs={6}>
-  <Bar
+				        <div class="app-card app-card-chart h-100 shadow-sm">
+					        <div class="app-card-header p-3">
+						        <div class="row justify-content-between align-items-center">
+							        <div class="col-auto">
+						                <h4 class="app-card-title">Pain Distribution After Painkiller Taken</h4>
+							        </div>
+						        </div>
+					        </div>
+					        <div class="app-card-body p-3">
+                                <div style={{ height: '250px' }}>
+                                    <Bar
     data={data}
     options={{
       maintainAspectRatio: false,
@@ -247,14 +251,36 @@ const Notes = () => {
       },
     }}
   />
+  </div>
+					        </div>
+				        </div>
   </Grid>
-  <Grid className="pie" item xs={6} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-  <div style={{ width: '300px' }}>
-    <Pie 
-    data={piesdata} 
-    options={options}/>
+  <Grid className="pie" item xs={6}>
+  <div class="app-card app-card-chart h-100 shadow-sm">
+    <div class="app-card-header p-3">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-auto">
+          <h4 class="app-card-title">Distribution of Pain in Activities</h4>
+        </div>
+      </div>
+    </div>
+    <div class="app-card-body p-3" style="display: flex; justify-content: center; align-items: center; height: 100%;">
+      <div style="width: 350px;">
+        <Pie
+          data={piesdata}
+          options={{
+            plugins: {
+              legend: {
+                position: 'right', // Set the legend position to 'right'
+              },
+            },
+          }}
+        />
+      </div>
+    </div>
   </div>
 </Grid>
+
 
 </Grid>
         </Container>
