@@ -3,6 +3,13 @@ from flask_pymongo import PyMongo, ObjectId
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 import re
+import hashlib
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -208,11 +215,31 @@ def updateDoctorDetails():
 # create a new patient
 @app.route("/api/patient", methods=["POST"])
 def createPatient():
+
+    nameIsUnique = False
+
+    while nameIsUnique == False:
+        username = hashlib.sha256(str(ObjectId()).encode()).hexdigest()[:7]
+        alreadyExists = []
+        for patient in patientCollection.find({"username": username}):
+            alreadyExists.append(patient)
+        if len(alreadyExists) == 0:
+            nameIsUnique = True
+
+    # key = Fernet.generate_key()
+    # cipher_suite = Fernet(key)
+
+    # encrypted_name = cipher_suite.encrypt(request.json["name"].encode()).decode()
+    # encrypted_username = cipher_suite.encrypt(username.encode()).decode()
+
+
     id = patientCollection.insert_one({
         "doctorID": request.json["doctorID"],
-        "name": request.json["name"]
+        "name": request.json["name"],
+        "username": username,
+        # "key": key
     }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following id: " + str(ObjectId(id)) + " for them to access the pain analysis system."})
+    return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following username: " + username + " for them to access the pain analysis system."})
 
 # get a list of all patients
 @app.route("/api/patient", methods=["GET"])
@@ -222,7 +249,8 @@ def getArrayofPatients():
         patients.append({
             "id": str(ObjectId(patient["_id"])),
             "doctorID": patient["doctorID"],
-            "name": patient["name"]
+            "name": patient["name"],
+            "username": patient["username"],
         })
     return jsonify(patients)
 
@@ -231,10 +259,15 @@ def getArrayofPatients():
 def getPatientsbyDoctor(id):
     patients = []
     for patient in patientCollection.find({"doctorID": id}):
+        # key = patient["key"]
+        # cipher_suite = Fernet(key)
+        # decrypted_name = cipher_suite.decrypt(patient["name"].encode()).decode()
+        # decrypted_username = cipher_suite.decrypt(patient["username"].encode()).decode()
         patients.append({
             "id": str(ObjectId(patient["_id"])),
             "doctorID": patient["doctorID"],
-            "name": patient["name"]
+            "name": patient["name"],
+            "username": patient["username"],
         })
     return jsonify(patients)
 

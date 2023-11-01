@@ -119,7 +119,7 @@ export default function AdminDashboard() {
                     </FormControl>
                     <Box sx={{ "& > :not(style)": { m: 1 } }}>
                       <Tooltip
-                        title={<h2 >Add Doctor</h2>}
+                        title={<h2>Add Doctor</h2>}
                         placement="left"
                         arrow
                       >
