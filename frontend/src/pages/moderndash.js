@@ -2,7 +2,8 @@ import '../dash.css';
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useNavigate } from "react-router-dom";
-import DropdownFilter from "./filter";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { useSelector, useDispatch } from "react-redux";
 import { getRecords } from "../redux/action";
 import { Bar,Pie } from "react-chartjs-2";
@@ -142,25 +143,29 @@ const NewNotes = () => {
     
     
     const backgroundColors = uniqueActivities.map(() => getRandomColor());
+    console.log("PAIN",uniquePainLevels)
   
     const datasets = uniquePainLevels.map((painlevel) => {
-      const dataCounts = durationLabels.map((duration) => {
+      const dataPercentages = durationLabels.map((duration) => {
         const count = filteredData.filter((record) => record.painlevel === painlevel && record.duration === duration).length;
-        return count;
+        const totalForDuration = filteredData.filter((record) => record.duration === duration).length;
+        const percentage = ((count / totalForDuration) * 100).toFixed(2);
+        console.log("%",percentage)
+        return percentage;
       });
-  
+    
       return {
         label: `${painlevel}`,
-        data: dataCounts,
-        backgroundColor: painLevelColors[`${painlevel}`], // Use the color mapping
-        borderColor: 'rgba(255, 255, 255, 1)', // You can customize the border color
+        data: dataPercentages,
+        backgroundColor: painLevelColors[painlevel],
       };
     });
-  
+    
     const data = {
       labels: durationLabels,
       datasets,
     };
+
   
     const piedataset = uniqueActivities.map((activity) => {
       const count = filteredData.filter((record) => record.activity === activity).length;
@@ -195,15 +200,15 @@ const NewNotes = () => {
 		    <div class="container-xl">
 			    
 <div class="pb-3 pr-3">
-          <FormControl className="date-filter" variant="outlined">
-    <select
+          <FormControl className="date-filter" variant="outlined" fullWidth style={{marginTop: "16px",maxWidth: 110 }}> 
+    <Select
   value={selectedDateRange}
   onChange={(e) => setSelectedDateRange(e.target.value)}
 >
-  <option value="All">All</option>
-  <option value="Today">Today</option>
-  <option value="LastWeek">Last Week</option>
-</select>
+  <MenuItem value="All">All</MenuItem>
+  <MenuItem value="Today">Today</MenuItem>
+  <MenuItem value="LastWeek">Last Week</MenuItem>
+</Select>
   </FormControl>
   </div>
   
@@ -255,14 +260,23 @@ const NewNotes = () => {
     data={data}
     options={{
       maintainAspectRatio: false,
-      scales: {
-        x: {
-          stacked: true,
+        indexAxis: 'y', // Use the 'y' axis for horizontal bars
+        elements: {
+          bar: {
+            borderWidth: 1,
+          },
         },
-        y: {
-          stacked: true,
+        responsive: true,
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true, // Ensure the y-axis starts at zero
+            max: 100, // Set the maximum value to 100 for 100% stacking
+          },
         },
-      },
     }}
   />
   </div>

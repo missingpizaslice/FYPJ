@@ -106,28 +106,7 @@ label {
   left:45%;
 }
 /* Custom styles for the dropdown button */
-.date-filter select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid black;
-  border-radius: 4px;
-  background-color: #fff;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
 
-/* Style the dropdown options */
-.date-filter select option {
-  background-color: #fff;
-}
-
-/* Style the dropdown button when it's focused */
-.date-filter select:focus {
-  border-color: #007bff; /* Change to your desired focus color */
-  box-shadow: 0 0 4px #007bff; /* Add a subtle box shadow */
-}
 
 
 .app-wrapper {
