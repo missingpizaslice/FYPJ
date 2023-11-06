@@ -14,3 +14,4 @@ export const SET_PATIENT_VALUE = "SET_PATIENT_VALUE";
 export const AUTHENTICATE = "AUTHENTICATE";
 export const  auth_model = "auth_model"
 export const GET_FRAMES = "GET_FRAMES"
+export const UPDATE_PASSWORD = "UPDATE_PASSWORD";

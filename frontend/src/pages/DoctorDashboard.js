@@ -21,6 +21,16 @@ import { FormControl, TextField } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Pagination from "@mui/material/Pagination"
+import { Grid } from "@mui/material";
+import { FormControl, TextField, Tooltip } from "@mui/material";
+import Modal from "@mui/material/Modal";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Pagination from "@mui/material/Pagination";
+import AddIcon from "@mui/icons-material/Add";
+import Fab from "@mui/material/Fab";
+import InsightsIcon from "@mui/icons-material/Insights";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const inital = {
   search: "",
@@ -66,8 +76,18 @@ export default function DoctorDashboard() {
     }
 
     dispatch(getPatients(doctorData.doctor_id));
-  },[]);
 
+    document.body.style.opacity = 0;
+    const fadeIn = () => {
+      let opacity = parseFloat(document.body.style.opacity);
+      if (opacity < 1) {
+        opacity += 0.02;
+        document.body.style.opacity = opacity;
+        requestAnimationFrame(fadeIn);
+      }
+    };
+    requestAnimationFrame(fadeIn);
+  }, []);
 
   useEffect(() => {
     if (msg) {
@@ -121,8 +141,8 @@ export default function DoctorDashboard() {
         <>
           <PatientNav />
 
-          <Container>
-            <Box sx={{ marginTop: 5, flexGrow: 1 }}>
+          <Container maxWidth="md">
+            <Box sx={{ marginTop: "130px", flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={12} lg={12}>
                   <Card
@@ -132,44 +152,41 @@ export default function DoctorDashboard() {
                       boxShadow: 3,
                     }}
                   >
-                    <Grid container>
-                      <Grid item xs={12} sm={12} md={10} lg={10}>
-                        <FormControl fullWidth={true} sx={{ height: "50px" }}>
-                          <TextField
-                            required
-                            fullWidth={true}
-                            type="text"
-                            placeholder="Patient Search"
-                            name="search"
-                            onChange={handleSearchInputChange}
-                          />
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={12} md={2} lg={2}>
-                        <Button
-                          size="medium"
-                          variant="contained"
-                          sx={{
-                            marginLeft: { xs: "0", md: "23px" },
-                            marginTop: { xs: "20px", md: "0px" },
-                            height: "54px",
-                            paddingRight: "26px",
-                            paddingLeft: "26px",
-                            width: { xs: "100%", md: "auto" },
-                          }}
-                          onClick={() => setOpen(true)}
-                        >
-                          Add Patient
-                        </Button>
-                      </Grid>
-                    </Grid>
+                    <FormControl fullWidth={true} sx={{ height: "50px" }}>
+                      <TextField
+                        required
+                        fullWidth={true}
+                        type="text"
+                        placeholder="Patient Search"
+                        name="search"
+                        onChange={handleSearchInputChange}
+                      />
+                    </FormControl>
+                    <Tooltip
+                      title={<h2>Add Patient</h2>}
+                      placement="left"
+                      arrow
+                    >
+                      <Fab
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                          position: "fixed",
+                          bottom: 50,
+                          right: 50,
+                        }}
+                        onClick={() => setOpen(true)}
+                      >
+                        <AddIcon />
+                      </Fab>
+                    </Tooltip>
                   </Card>
                 </Grid>
               </Grid>
             </Box>
           </Container>
 
-          <Container>
+          <Container maxWidth="md">
             <Box sx={{ marginTop: 5, marginBottom: 20, flexGrow: 1 }}>
               <Grid container spacing={2}>
                 {displayPatients.map((patient) => (
@@ -178,21 +195,25 @@ export default function DoctorDashboard() {
                       sx={{
                         align: "center",
                         padding: "20px",
-                        boxShadow: 1,
+                        boxShadow: 2,
+                        animation: "fadeIn 0.4s ease-in-out",
                       }}
                     >
                       <Grid container>
                         <Grid item xs={12} sm={12} md={6} lg={6}>
                           <CardContent>
                             <Typography sx={{ textAlign: "left" }}>
+                              Paitent id: {patient.id}
+                            </Typography>
+                            <Typography sx={{ textAlign: "left" }}>
                               Paitent Name: {patient.name}
                             </Typography>
                             <Typography sx={{ textAlign: "left" }}>
-                              Paitent id: {patient.id}
+                              Paitent Username: {patient.username}
                             </Typography>
                           </CardContent>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6}>
+                        {/* <Grid item xs={12} sm={12} md={6} lg={6}>
                           <CardActions>
                           <Button
                           size="medium"
@@ -208,9 +229,32 @@ export default function DoctorDashboard() {
                           }
                         >
                           View Records
-                        </Button>
-                          </CardActions>
-                        </Grid>
+                        </Button> */}
+                            <Tooltip
+                              title={<h2>View Records</h2>}
+                              placement="top"
+                              arrow
+                            >
+                              <Button
+                                size="large"
+                                variant="primary"
+                                sx={{
+                                  marginLeft: { xs: "0", md: "auto" },
+                                  marginTop: { xs: "0px", md: "10px" },
+                                  height: "63px",
+                                  borderRadius: "50%",
+                                  transition: "0.3s",
+                                  "&:hover": {
+                                    backgroundColor: "#2e79d5", // Change the background color on hover
+                                    color: "white", // Change the text color on hover
+                                  },
+                                }}
+                              >
+                                <DashboardIcon />
+                              </Button>
+                            </Tooltip>
+                          {/* </CardActions> */}
+                        {/* </Grid> */}
                       </Grid>
                     </Card>
                   </Grid>
@@ -290,3 +334,19 @@ export default function DoctorDashboard() {
     </>
   );
 }
+
+const fadeIn = `
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+// Add the CSS to the head of the document
+const style = document.createElement("style");
+style.innerHTML = fadeIn;
+document.head.appendChild(style);

@@ -2,37 +2,50 @@
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useDispatch, useSelector } from "react-redux";
-import { addDoctor } from "../redux/action";
+import {
+  loadsingleDoctor,
+  loginAuth,
+  passwordUpdate,
+  setMessage,
+} from "../redux/action";
+import { useNavigate } from "react-router-dom";
 
-// material UI imports
+// Material UI imports
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { FormControl, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { FormControl, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import Modal from "@mui/material/Modal";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 // this components initial state
 const inital = {
-  email: "",
-  name: "",
-  staffNumber: "",
-  password: "",
-  confirmPassword: "",
-  staffType: "",
+  currentPassword: "",
+  newPassword: "",
+  confirmNewPassword: "",
 };
 
-export default function DoctorRegister() {
+export default function DoctorUpdatePassword() {
   // declare variables
   const [state, setstate] = useState(inital);
-  const { email, name, staffNumber, password, confirmPassword, staffType } = state;
+  const [loginerror, setloginerror] = useState("");
+  const { currentPassword, newPassword, confirmNewPassword } = state;
   const dispatch = useDispatch();
-  const [registrationError, setregistrationError] = useState("");
-  const msg = useSelector((state) => state.data.msg);
-  const [open, setOpen] = useState(false);
+  const { doctor, msg } = useSelector((state) => state.data);
+  const navigate = useNavigate();
+  const doctorDataJSON = localStorage.getItem("doctorData");
+  const doctorData = JSON.parse(doctorDataJSON);
+  const [updatefinished, setupdatefinished] = useState(false);
 
+  // clear browsers local storage when page loads
   useEffect(() => {
+    if (doctorData == null || !doctorData.doctor_id) {
+      navigate("/doctorLogin");
+      return;
+    }
+    setupdatefinished(false);
     dispatch(setMessage(""));
+    setloginerror("");
 
     document.body.style.opacity = 0;
     const fadeIn = () => {
@@ -46,13 +59,18 @@ export default function DoctorRegister() {
     requestAnimationFrame(fadeIn);
   }, []);
 
-  // this function closes the success pop up modal
-  const handleClose = (event, reason) => {
-    if (reason !== "backdropClick") {
-      setOpen(false);
+  useEffect(() => {
+    setloginerror("");
+    // if the authentication process returns an error, display the error
+    if (msg == "password successfully updated") {
+      console.log("successfully updated doctor details");
+      setupdatefinished(true);
+    } else {
+      setloginerror(msg);
       setstate(inital);
+      return;
     }
-  };
+  }, [msg]);
 
   // updates the values of local state variables with the data entered in by the user in the registration form
   const handleChange = (e) => {
@@ -60,26 +78,58 @@ export default function DoctorRegister() {
     setstate({ ...state, [name]: value });
   };
 
-  // display error messages if registration fails and displays the success pop up if registration succeeds
-  useEffect(() => {
-    setregistrationError("");
-    if (msg == "new doctor has been added successfully") {
-      setOpen(true);
-    } else {
-      setregistrationError(msg);
+  // this function attempts to retrieve the users data from the database for authentication.
+  // returns the user data if the user is inside the database and an error message if user is not
+  const handlesubmit = (e) => {
+    e.preventDefault();
+
+    if (newPassword == currentPassword) {
+      setloginerror("New password cannot be the same as old password");
       setstate(inital);
       return;
     }
-  }, [msg]);
 
-  // function that updates the database with a new user
-  const handlesubmit = (e) => {
-    e.preventDefault();
-    dispatch(addDoctor(state));
+    if (
+      currentPassword == "" ||
+      newPassword == "" ||
+      confirmNewPassword == ""
+    ) {
+      setloginerror("Please fill all fields");
+      setstate(inital);
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setloginerror("Passwords do not match");
+      setstate(inital);
+      return;
+    }
+
+    const data = {
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+      confirmNewPassword: confirmNewPassword,
+      doctor_id: doctorData.doctor_id,
+    };
+
+    console.log(data);
+    dispatch(passwordUpdate(data));
     setstate(inital);
   };
 
-  // modal style
+  const handleClose = (event, reason) => {
+    if (reason !== "backdropClick") {
+      setupdatefinished(false);
+      if (doctorData.staffType == "doctor") {
+        dispatch(setMessage(""));
+        navigate("/doctorDashboard");
+      } else {
+        dispatch(setMessage(""));
+        navigate("/adminDashboard");
+      }
+    }
+  };
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -92,6 +142,7 @@ export default function DoctorRegister() {
     p: 4,
   };
 
+  // React component that returns the login page
   return (
     <>
       <PatientNav />
@@ -118,96 +169,52 @@ export default function DoctorRegister() {
             }}
           >
             <Typography component="h1" variant="h4" sx={{ padding: "20px" }}>
-              Register
+              Update Password
             </Typography>
             <Typography component="p" color={"red"}>
-              {registrationError}
+              {loginerror}
             </Typography>
             <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
-                Email
+                Current Passwordss
               </Typography>
               <TextField
                 required
                 fullWidth
                 type="text"
-                placeholder="john@example.com"
-                name="email"
-                value={email || ""}
+                placeholder="************"
+                name="currentPassword"
+                value={currentPassword || ""}
                 onChange={handleChange}
               />
             </FormControl>
             <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
-                Name
-              </Typography>
-              <TextField
-                required
-                fullWidth
-                type="text"
-                placeholder="John Doe"
-                name="name"
-                value={name || ""}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl fullWidth={true} margin="normal">
-              <Typography component="p" align="left">
-                Staff ID
-              </Typography>
-              <TextField
-                required
-                fullWidth
-                type="text"
-                placeholder="SN12345"
-                name="staffNumber"
-                value={staffNumber || ""}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl fullWidth={true} margin="normal">
-              <Typography component="p" align="left">
-                password
+                New Password
               </Typography>
               <TextField
                 required
                 fullWidth
                 type="password"
                 placeholder="************"
-                name="password"
-                value={password || ""}
+                name="newPassword"
+                value={newPassword || ""}
                 onChange={handleChange}
               />
             </FormControl>
             <FormControl fullWidth={true} margin="normal">
               <Typography component="p" align="left">
-                confirm password
+                Confirm New Password
               </Typography>
               <TextField
                 required
                 fullWidth
                 type="password"
                 placeholder="************"
-                name="confirmPassword"
-                value={confirmPassword || ""}
+                name="confirmNewPassword"
+                value={confirmNewPassword || ""}
                 onChange={handleChange}
               />
-            </FormControl>
-            <FormControl fullWidth={true} margin="normal">
-              <Typography component="p" align="left">
-                Account Type
-              </Typography>
-              <Select
-                required
-                name="staffType"
-                value={staffType || ""}
-                onChange={handleChange}
-              >
-                <MenuItem value={"Doctor"}>Doctor</MenuItem>
-                <MenuItem value={"Admin"}>
-                  Admin
-                </MenuItem>
-              </Select>
             </FormControl>
             <div className=".d-grid gap-2 mt-2">
               <Button
@@ -216,14 +223,14 @@ export default function DoctorRegister() {
                 fullWidth={true}
                 sx={{ marginTop: "20px" }}
               >
-                Register
+                Change Password
               </Button>
             </div>
           </Box>
         </Box>
       </Container>
 
-      <Modal open={open}>
+      <Modal open={updatefinished}>
         <Box sx={style}>
           <Box
             sx={{
@@ -234,7 +241,7 @@ export default function DoctorRegister() {
           >
             <CheckCircleIcon color="success" fontSize="large" />
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              New Doctor Added Successfully
+              {msg}
             </Typography>
           </Box>
 
@@ -242,10 +249,10 @@ export default function DoctorRegister() {
             type="submit"
             variant="contained"
             fullWidth={true}
-            sx={{ marginTop: "20px" }}
+            sx={{ marginTop: "30px" }}
             onClick={handleClose}
           >
-            OK!
+            Back
           </Button>
         </Box>
       </Modal>

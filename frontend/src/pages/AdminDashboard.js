@@ -10,9 +10,11 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
-import { FormControl, TextField } from "@mui/material";
+import { FormControl, TextField, Tooltip } from "@mui/material";
 import { Grid } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
+import AddIcon from "@mui/icons-material/Add";
+import Fab from "@mui/material/Fab";
 
 const inital = {
   search: "",
@@ -59,6 +61,17 @@ export default function AdminDashboard() {
 
     console.log(doctorData);
     dispatch(getDoctors());
+
+    document.body.style.opacity = 0;
+    const fadeIn = () => {
+      let opacity = parseFloat(document.body.style.opacity);
+      if (opacity < 1) {
+        opacity += 0.02;
+        document.body.style.opacity = opacity;
+        requestAnimationFrame(fadeIn);
+      }
+    };
+    requestAnimationFrame(fadeIn);
   }, []);
 
   const handleChange = (e) => {
@@ -77,8 +90,8 @@ export default function AdminDashboard() {
         <>
           <PatientNav />
 
-          <Container>
-            <Box sx={{ marginTop: 5, flexGrow: 1 }}>
+          <Container maxWidth="md">
+            <Box sx={{ marginTop: "130px", flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={12} lg={12}>
                   <Card
@@ -86,46 +99,51 @@ export default function AdminDashboard() {
                       align: "center",
                       padding: "20px",
                       boxShadow: 3,
+                      animation: "fadeIn 0.4s ease-in-out",
                     }}
                   >
-                    <Grid container>
-                      <Grid item xs={12} sm={12} md={10} lg={10}>
-                        <FormControl fullWidth={true} sx={{ height: "50px" }}>
-                          <TextField
-                            required
-                            fullWidth={true}
-                            type="text"
-                            placeholder="Patient Search"
-                            name="email"
-                            onChange={handleSearchInputChange}
-                          />
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={12} md={2} lg={2}>
-                        <Button
-                          size="medium"
+                    <FormControl
+                      fullWidth={true}
+                      sx={{
+                        height: "50px",
+                      }}
+                    >
+                      <TextField
+                        required
+                        fullWidth={true}
+                        type="text"
+                        placeholder="Search"
+                        name="email"
+                        onChange={handleSearchInputChange}
+                      />
+                    </FormControl>
+                    <Box sx={{ "& > :not(style)": { m: 1 } }}>
+                      <Tooltip
+                        title={<h2>Add Doctor</h2>}
+                        placement="left"
+                        arrow
+                      >
+                        <Fab
                           variant="contained"
+                          color="primary"
                           sx={{
-                            marginLeft: { xs: "0", md: "23px" },
-                            marginTop: { xs: "20px", md: "0px" },
-                            height: "54px",
-                            paddingRight: "26px",
-                            paddingLeft: "26px",
-                            width: { xs: "100%", md: "auto" },
+                            position: "fixed",
+                            bottom: 50,
+                            right: 50,
                           }}
                           onClick={() => navigate("/doctorRegistration")}
                         >
-                          Add Doctor
-                        </Button>
-                      </Grid>
-                    </Grid>
+                          <AddIcon />
+                        </Fab>
+                      </Tooltip>
+                    </Box>
                   </Card>
                 </Grid>
               </Grid>
             </Box>
           </Container>
 
-          <Container>
+          <Container maxWidth="md">
             <Box sx={{ marginTop: 5, marginBottom: 20, flexGrow: 1 }}>
               <Grid container spacing={2}>
                 {displayedDoctors.map((doctor) => (
@@ -177,3 +195,19 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+const fadeIn = `
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+// Add the CSS to the head of the document
+const style = document.createElement("style");
+style.innerHTML = fadeIn;
+document.head.appendChild(style);

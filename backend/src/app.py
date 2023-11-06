@@ -2,7 +2,16 @@ from flask import Flask, request, jsonify,Response
 from flask_pymongo import PyMongo, ObjectId
 # from check import open_opencv_window
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 import re
+import hashlib
+
+# from cryptography.fernet import Fernet
+# from cryptography.hazmat.primitives import hashes
+# from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+# from cryptography.hazmat.backends import default_backend
+# from base64 import urlsafe_b64encode, urlsafe_b64decode
+
 
 import cv2
 import mediapipe as mp
@@ -27,7 +36,8 @@ from modelbase import STA_LSTM as Net
 from sklearn.metrics import confusion_matrix
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/painanalysisdb'
+bcrypt = Bcrypt(app)
+app.config['MONGO_URI'] = 'mongodb://localhost/painanalysisdb'
 mongo = PyMongo(app)
 
 CORS(app)
@@ -50,6 +60,12 @@ def createDoctor():
     passwordRegex = r'^.{12,}$'
 
     emailValid = True
+
+    doctor = doctorCollection.find_one({"email": request.json["email"]})
+
+    if doctor:
+        emailValid = False
+        return jsonify({"msg": "the email is already in use"})
 
     if re.match(emailRegex, request.json["email"].lower()):
         emailValid = True
@@ -79,12 +95,20 @@ def createDoctor():
     if request.json["password"] != request.json["confirmPassword"]:
         emailValid = False
         return jsonify({"msg": "the passwords do not match"})
+    
+    if request.json["staffType"] == "":
+        emailValid = False
+        return jsonify({"msg": "staff type cannot be empty"})
         
     if (emailValid):
+        
+        password = request.json["password"]
+        pw_hashed = bcrypt.generate_password_hash(password)
+
         id = doctorCollection.insert_one({
         "name": request.json["name"].lower(),
         "email": request.json["email"].lower(),
-        "password": request.json["password"].lower(),
+        "password": pw_hashed,
         "staffNumber": request.json["staffNumber"].lower(),
         "staffType": request.json["staffType"].lower()
     }).inserted_id
@@ -99,7 +123,6 @@ def getArrayofDoctors():
             "id": str(ObjectId(doc["_id"])),
             "name": doc["name"],
             "email": doc["email"],
-            "password": doc["password"],
             "staffNumber": doc["staffNumber"],
             "staffType": doc["staffType"]
         })
@@ -112,14 +135,20 @@ def getArrayofDoctors():
 def authenticateDoctor():
     doctor = doctorCollection.find_one({"email": request.json["email"]})
     if doctor:
-        if doctor["password"] == request.json["password"]:
+        
+        hashed_password = doctor["password"]
+        password = request.json["password"]
+        print(hashed_password)
+
+        match =  bcrypt.check_password_hash(hashed_password, password)
+
+        if match:
             return jsonify({
                 "msg": "login successful",
                 "doctor": {
                     "id": str(ObjectId(doctor["_id"])),
                     "name": doctor["name"],
                     "email": doctor["email"],
-                    "password": doctor["password"],
                     "staffNumber": doctor["staffNumber"],
                     "staffType": doctor["staffType"]
                 }
@@ -138,7 +167,6 @@ def getdoctorbyemail(id):
             "id": str(ObjectId(doctor["_id"])),
             "name": doctor["name"],
             "email": doctor["email"],
-            "password": doctor["password"],
             "staffNumber": doctor["staffNumber"],
             "staffType": doctor["staffType"]
         })
@@ -154,7 +182,6 @@ def getdoctorbyid(id):
             "id": str(ObjectId(doctor["_id"])),
             "name": doctor["name"],
             "email": doctor["email"],
-            "password": doctor["password"],
             "staffNumber": doctor["staffNumber"],
             "staffType": doctor["staffType"]
         })
@@ -167,17 +194,54 @@ def getdoctorbyid(id):
 #     doctorCollection.delete_one({"_id": ObjectId(id)})
 #     return jsonify({"msg": "doctor account deleted successfully"})
 
-# update staff member details
-@app.route("/api/doctor/<id>", methods=["PUT"])
-def updateDoctorDetails(id):
-    doctorCollection.update_one({"_id": ObjectId(id)}, {"$set": {
-        "name": request.json["name"],
-        "email": request.json["email"],
-        "password": request.json["password"],
-        "staffNumber": request.json["staffNumber"],
-        "staffType": request.json["staffType"]
-    }})
-    return jsonify({"msg": "doctor details updated successfully"})
+# update Doctor's password
+@app.route("/api/updatePassword", methods=["POST"])
+def updateDoctorDetails():
+
+    passwordRegex = r'^.{12,}$'
+
+    doctor = doctorCollection.find_one({"_id": ObjectId(request.json["doctor_id"])})
+
+    if doctor == None:
+        return jsonify({"msg": "Unknown error has occoured please try again later"})
+
+    emailValid = True
+
+    hashed_password = doctor["password"]
+    password = request.json["currentPassword"]
+    print(hashed_password)
+
+    if not bcrypt.check_password_hash(hashed_password, password):
+        emailValid = False
+        return jsonify({"msg": "Current password is incorrect"})
+
+    if request.json["currentPassword"] == "" or request.json["newPassword"] == "" or request.json["confirmNewPassword"] == "":
+        emailValid = False
+        return jsonify({"msg": "Please fill all fields"})
+
+    if doctor["_id"] == request.json["newPassword"]:
+        emailValid = False
+        return jsonify({"msg": "New password cannot be the same as old password"})
+
+    if request.json["newPassword"] != request.json["confirmNewPassword"]:
+        emailValid = False
+        return jsonify({"msg": "passwords do not match"})
+
+    if re.match(passwordRegex, request.json["newPassword"]):
+        emailValid = True
+    else:
+        emailValid = False
+        return jsonify({"msg": "the password is invalid"})
+
+    if (emailValid):
+        
+        password = request.json["newPassword"]
+        pw_hashed = bcrypt.generate_password_hash(password)
+
+        doctorCollection.update_one({"_id": ObjectId(request.json["doctor_id"])}, {"$set": {
+            "password": pw_hashed
+        }})
+        return jsonify({"msg": "password successfully updated"})
 
 # ========================================================================================================
 
@@ -186,11 +250,36 @@ def updateDoctorDetails(id):
 # create a new patient
 @app.route("/api/patient", methods=["POST"])
 def createPatient():
-    id = patientCollection.insert_one({
-        "doctorID": request.json["doctorID"],
-        "name": request.json["name"]
-    }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following id: " + str(ObjectId(id)) + " to access the pain analysis system."})
+
+    nameIsUnique = False
+
+    validDate = True
+
+    if request.json["name"] == "":
+        validDate = False
+
+    while nameIsUnique == False:
+        username = hashlib.sha256(str(ObjectId()).encode()).hexdigest()[:7]
+        alreadyExists = []
+        for patient in patientCollection.find({"username": username}):
+            alreadyExists.append(patient)
+        if len(alreadyExists) == 0:
+            nameIsUnique = True
+
+    # key = Fernet.generate_key()
+    # cipher_suite = Fernet(key)
+
+    # encrypted_name = cipher_suite.encrypt(request.json["name"].encode()).decode()
+    # encrypted_username = cipher_suite.encrypt(username.encode()).decode()
+
+    if validDate == True:
+        id = patientCollection.insert_one({
+            "doctorID": request.json["doctorID"],
+            "name": request.json["name"],
+            "username": username,
+            # "key": key
+        }).inserted_id
+        return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following username: " + username + " for them to access the pain analysis system."})
 
 # get a list of all patients
 @app.route("/api/patient", methods=["GET"])
@@ -200,7 +289,8 @@ def getArrayofPatients():
         patients.append({
             "id": str(ObjectId(patient["_id"])),
             "doctorID": patient["doctorID"],
-            "name": patient["name"]
+            "name": patient["name"],
+            "username": patient["username"],
         })
     return jsonify(patients)
 
@@ -209,10 +299,15 @@ def getArrayofPatients():
 def getPatientsbyDoctor(id):
     patients = []
     for patient in patientCollection.find({"doctorID": id}):
+        # key = patient["key"]
+        # cipher_suite = Fernet(key)
+        # decrypted_name = cipher_suite.decrypt(patient["name"].encode()).decode()
+        # decrypted_username = cipher_suite.decrypt(patient["username"].encode()).decode()
         patients.append({
             "id": str(ObjectId(patient["_id"])),
             "doctorID": patient["doctorID"],
-            "name": patient["name"]
+            "name": patient["name"],
+            "username": patient["username"],
         })
     return jsonify(patients)
 

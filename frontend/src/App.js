@@ -16,6 +16,8 @@ import SubmitPredForm from "./pages/submitPredForm";
 import Dashboard from "./pages/fullDash"; 
 import Notes from "./pages/sidemenu"; 
 import NewNotes from "./pages/moderndash"; 
+import AdminDashboard from "./pages/AdminDashboard";
+import DoctorUpdatePassword from "./pages/DoctorUpdatePassword";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +59,10 @@ const router = createBrowserRouter([
   {
     path: "/doctorDashboard",
     element: <DoctorDashboard />,
+  },
+  {
+    path: "/DoctorUpdatePassword",
+    element: <DoctorUpdatePassword />,
   },
   {
     path: "/",
