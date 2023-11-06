@@ -13,22 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import { Grid } from "@mui/material";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-        {/* <Grid className="side-menu" item xs={6} md={2}>
-        <CardActions>
-                          <Button
-                          size="medium"
-                          variant="contained"
-                          sx={{
-                            height: "35px",
-                          }}
-                          onClick={() => {
-                            navigate("/")}
-                          }
-                        >
-                          Logout
-                        </Button>
-                          </CardActions>
-        </Grid> */}
+
 const NewNotes = () => {
 
     const navigate = useNavigate();
@@ -42,7 +27,7 @@ const NewNotes = () => {
   
     useEffect(() => {
       dispatch(getRecords(patient_id));
-    }, [selectedDateRange]);
+    }, []);
   
     function getLastWeekDates() {
       const today = new Date();

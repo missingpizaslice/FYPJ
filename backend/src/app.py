@@ -293,7 +293,7 @@ def open_opencv_window(username,activity,duration):
     LSTM_HIDDEN_DIM = 64  # 32 #64
 
     OUT_DIM = 3
-    text = "No pain"
+    text = "JUST CHECKING"
 
     LEARNING_RATE = 0.05  # learning rate
     WEIGHT_DECAY = 1e-6  # not used as the number of epoches is only 8 or 10
