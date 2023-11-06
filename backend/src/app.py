@@ -4,11 +4,12 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 import re
 import hashlib
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.backends import default_backend
-from base64 import urlsafe_b64encode, urlsafe_b64decode
+
+# from cryptography.fernet import Fernet
+# from cryptography.hazmat.primitives import hashes
+# from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+# from cryptography.hazmat.backends import default_backend
+# from base64 import urlsafe_b64encode, urlsafe_b64decode
 
 
 app = Flask(__name__)

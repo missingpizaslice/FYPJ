@@ -215,29 +215,6 @@ export default function DoctorDashboard() {
                         <Grid item xs={12} sm={12} md={6} lg={6}>
                           <CardActions>
                             <Tooltip
-                              title={<h2>Archive Patient</h2>}
-                              placement="top"
-                              arrow
-                            >
-                              <Button
-                                size="large"
-                                variant="primary"
-                                sx={{
-                                  marginLeft: { xs: "0", md: "auto" },
-                                  marginTop: { xs: "0px", md: "10px" },
-                                  height: "63px",
-                                  borderRadius: "50%",
-                                  transition: "0.3s",
-                                  "&:hover": {
-                                    backgroundColor: "#2e79d5", // Change the background color on hover
-                                    color: "white", // Change the text color on hover
-                                  },
-                                }}
-                              >
-                                <ArchiveIcon />
-                              </Button>
-                            </Tooltip>
-                            <Tooltip
                               title={<h2>View Records</h2>}
                               placement="top"
                               arrow
