@@ -11,7 +11,6 @@ import RecordsDashboard from "./pages/RecordsDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import Homepage from "./pages/Homepage";
 import Form from "./pages/PredictForm";
-import AdminDashboard from "./pages/AdminDashboard"
 import SubmitPredForm from "./pages/submitPredForm"; 
 import Dashboard from "./pages/fullDash"; 
 import Notes from "./pages/sidemenu"; 

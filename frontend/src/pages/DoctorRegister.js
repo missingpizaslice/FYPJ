@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useDispatch, useSelector } from "react-redux";
-import { addDoctor } from "../redux/action";
+import { addDoctor,setMessage } from "../redux/action";
 
 // material UI imports
 import Box from "@mui/material/Box";

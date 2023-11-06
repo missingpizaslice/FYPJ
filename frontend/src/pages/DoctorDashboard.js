@@ -17,15 +17,10 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
 import { CircularProgress, Grid } from "@mui/material";
-import { FormControl, TextField } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Pagination from "@mui/material/Pagination"
-import { Grid } from "@mui/material";
 import { FormControl, TextField, Tooltip } from "@mui/material";
-import Modal from "@mui/material/Modal";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import Pagination from "@mui/material/Pagination";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -249,6 +244,10 @@ export default function DoctorDashboard() {
                                     color: "white", // Change the text color on hover
                                   },
                                 }}
+                                onClick={() => {
+                                  sessionStorage.setItem('patient_id', patient.id);
+                                  navigate("/NewNotes")}
+                                }
                               >
                                 <DashboardIcon />
                               </Button>
