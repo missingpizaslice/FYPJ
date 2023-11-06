@@ -23,6 +23,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Pagination from "@mui/material/Pagination";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
+import InsightsIcon from "@mui/icons-material/Insights";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const inital = {
   search: "",
@@ -191,7 +194,7 @@ export default function DoctorDashboard() {
                       sx={{
                         align: "center",
                         padding: "20px",
-                        boxShadow: 1,
+                        boxShadow: 2,
                         animation: "fadeIn 0.4s ease-in-out",
                       }}
                     >
@@ -199,26 +202,41 @@ export default function DoctorDashboard() {
                         <Grid item xs={12} sm={12} md={6} lg={6}>
                           <CardContent>
                             <Typography sx={{ textAlign: "left" }}>
+                              Paitent id: {patient.id}
+                            </Typography>
+                            <Typography sx={{ textAlign: "left" }}>
                               Paitent Name: {patient.name}
                             </Typography>
                             <Typography sx={{ textAlign: "left" }}>
-                              Paitent id: {patient.id}
+                              Paitent Username: {patient.username}
                             </Typography>
                           </CardContent>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6}>
                           <CardActions>
-                            <Button
-                              size="medium"
-                              variant="outlined"
-                              sx={{
-                                marginLeft: { xs: "0", md: "auto" },
-                                marginTop: { xs: "0px", md: "10px" },
-                                height: "55px",
-                              }}
+                            <Tooltip
+                              title={<h2>View Records</h2>}
+                              placement="top"
+                              arrow
                             >
-                              View Records
-                            </Button>
+                              <Button
+                                size="large"
+                                variant="primary"
+                                sx={{
+                                  marginLeft: { xs: "0", md: "auto" },
+                                  marginTop: { xs: "0px", md: "10px" },
+                                  height: "63px",
+                                  borderRadius: "50%",
+                                  transition: "0.3s",
+                                  "&:hover": {
+                                    backgroundColor: "#2e79d5", // Change the background color on hover
+                                    color: "white", // Change the text color on hover
+                                  },
+                                }}
+                              >
+                                <DashboardIcon />
+                              </Button>
+                            </Tooltip>
                           </CardActions>
                         </Grid>
                       </Grid>
