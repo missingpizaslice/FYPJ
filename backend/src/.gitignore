@@ -1,0 +1,9 @@
+/batch_norm.bias
+/batch_norm.running_mean
+/batch_norm.running_var
+/batch_norm.weight
+/lstmcell.weight_hh
+/lstmcell.weight_ih
+/model/
+/SGH_26to100_b2_e100.pth
+/__pycache__

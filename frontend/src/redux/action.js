@@ -8,6 +8,12 @@ const doctorAdded = (msg) => ({
   payload: msg,
 });
 
+const auth_msg_model = (msg) => ({
+  type: types.auth_model,
+  payload: msg,
+});
+
+
 const patientAdded = (msg) => ({
   type: types.ADD_PATIENT,
   payload: msg,
@@ -43,6 +49,17 @@ export const searchPatient = (patients) => ({
   payload: patients,
 });
 
+const RecordsGet = (records) => ({
+  type: types.GET_RECORDS,
+  payload: records,
+})
+
+const FramesGet = (frames) => ({
+  type: types.GET_FRAMES,
+  payload: frames,
+})
+
+
 // ==================== Actions ====================
 
 export const loginAuth = (login) => {
@@ -50,6 +67,7 @@ export const loginAuth = (login) => {
     axios
       .post(`${API}/api/authenticate`, login)
       .then((resp) => {
+        console.log(resp)
         dispatch(doctorAuthenticated(resp.data));
       })
       .catch((err) => console.log(err));
@@ -107,6 +125,45 @@ export const getDoctors = () => {
       .get(`${API}/api/doctor`)
       .then((resp) => {
         dispatch(doctorGet(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
+
+export const addPatientModel = (name) => {
+  return function (dispatch){
+    console.log(name)
+    axios
+      .post(`${API}/start_opencv`, name)
+      .then((resp) => {
+        if (resp.data.msg) {
+        dispatch(auth_msg_model(resp.data.msg));
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
+
+export const getRecords = (id) => {
+  return function (dispatch) {
+    axios
+      .get(`${API}/api/record/${id}`)
+      .then((resp) => {
+        console.log(resp.data)
+        dispatch(RecordsGet(resp.data));
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
+export const getFrames = (data) => {
+  return function (dispatch) {
+    axios
+      .get(`${API}/start_opencv`,data)
+      .then((resp) => {
+        dispatch(FramesGet(resp.data));
       })
       .catch((err) => console.log(err));
   };

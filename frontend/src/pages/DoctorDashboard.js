@@ -16,11 +16,11 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
-import { Grid } from "@mui/material";
-import { FormControl, TextField, Tooltip } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import Modal from "@mui/material/Modal";
+import Pagination from "@mui/material/Pagination"
+import { FormControl, TextField, Tooltip } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import Pagination from "@mui/material/Pagination";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -70,7 +70,6 @@ export default function DoctorDashboard() {
       return;
     }
 
-    console.log(doctorData);
     dispatch(getPatients(doctorData.doctor_id));
 
     document.body.style.opacity = 0;
@@ -106,10 +105,7 @@ export default function DoctorDashboard() {
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    const patientDetails = {
-      name: patientName,
-      doctorID: doctorData.doctor_id,
-    };
+    const patientDetails = { name: patientName, doctorID: doctorData.doctor_id };
     setOpen(false);
     dispatch(addPatient(patientDetails));
   };
@@ -212,8 +208,23 @@ export default function DoctorDashboard() {
                             </Typography>
                           </CardContent>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6}>
+                        {/* <Grid item xs={12} sm={12} md={6} lg={6}>
                           <CardActions>
+                          <Button
+                          size="medium"
+                          variant="outlined"
+                          sx={{
+                            marginLeft: { xs: "0", md: "auto" },
+                            marginTop: { xs: "0px", md: "10px" },
+                            height: "55px",
+                          }}
+                          onClick={() => {
+                            sessionStorage.setItem('patient_id', patient.id);
+                            navigate("/NewNotes")}
+                          }
+                        >
+                          View Records
+                        </Button> */}
                             <Tooltip
                               title={<h2>View Records</h2>}
                               placement="top"
@@ -233,12 +244,16 @@ export default function DoctorDashboard() {
                                     color: "white", // Change the text color on hover
                                   },
                                 }}
+                                onClick={() => {
+                                  sessionStorage.setItem('patient_id', patient.id);
+                                  navigate("/NewNotes")}
+                                }
                               >
                                 <DashboardIcon />
                               </Button>
                             </Tooltip>
-                          </CardActions>
-                        </Grid>
+                          {/* </CardActions> */}
+                        {/* </Grid> */}
                       </Grid>
                     </Card>
                   </Grid>

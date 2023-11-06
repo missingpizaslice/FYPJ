@@ -7,15 +7,41 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/error404";
 import DoctorLogin from "./pages/DoctorLogin";
 import DoctorRegister from "./pages/DoctorRegister";
+import RecordsDashboard from "./pages/RecordsDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import Homepage from "./pages/Homepage";
+import Form from "./pages/PredictForm";
+import SubmitPredForm from "./pages/submitPredForm"; 
+import Dashboard from "./pages/fullDash"; 
+import Notes from "./pages/sidemenu"; 
+import NewNotes from "./pages/moderndash"; 
 import AdminDashboard from "./pages/AdminDashboard";
 import DoctorUpdatePassword from "./pages/DoctorUpdatePassword";
 
 const router = createBrowserRouter([
   {
-    path: "/patient",
-    element: <Patient />,
+    path: "/PredictForm",
+    element: <Form />,
+  },
+  {
+    path: "/NewNotes",
+    element: <NewNotes />,
+  },
+  {
+    path: "/note",
+    element: <Notes />,
+  },
+  {
+    path: "/fullDash",
+    element: <Dashboard />,
+  },
+  {
+    path: "/submitPredForm",
+    element: <SubmitPredForm />,
+  },
+  {
+    path: "/recordsDashboard",
+    element: <RecordsDashboard />,
   },
   {
     path: "/doctorLogin",
@@ -23,7 +49,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admindashboard",
-    element: <AdminDashboard />,
+    element:<AdminDashboard />
   },
   {
     path: "/doctorRegistration",

@@ -2,18 +2,12 @@
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useDispatch, useSelector } from "react-redux";
-import { addDoctor, setMessage } from "../redux/action";
+import { addDoctor,setMessage } from "../redux/action";
 
 // material UI imports
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import {
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { FormControl, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import Modal from "@mui/material/Modal";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -31,8 +25,7 @@ const inital = {
 export default function DoctorRegister() {
   // declare variables
   const [state, setstate] = useState(inital);
-  const { email, name, staffNumber, password, confirmPassword, staffType } =
-    state;
+  const { email, name, staffNumber, password, confirmPassword, staffType } = state;
   const dispatch = useDispatch();
   const [registrationError, setregistrationError] = useState("");
   const msg = useSelector((state) => state.data.msg);
@@ -58,7 +51,6 @@ export default function DoctorRegister() {
     if (reason !== "backdropClick") {
       setOpen(false);
       setstate(inital);
-      // Navigate("/admindashboard");
     }
   };
 
@@ -212,7 +204,9 @@ export default function DoctorRegister() {
                 onChange={handleChange}
               >
                 <MenuItem value={"Doctor"}>Doctor</MenuItem>
-                <MenuItem value={"Admin"}>Admin</MenuItem>
+                <MenuItem value={"Admin"}>
+                  Admin
+                </MenuItem>
               </Select>
             </FormControl>
             <div className=".d-grid gap-2 mt-2">

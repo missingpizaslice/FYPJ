@@ -13,6 +13,7 @@ const appReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_DOCTOR:
     case types.ADD_PATIENT:
+    case types.auth_model:
       return {
         ...state,
         msg: action.payload,
@@ -21,7 +22,8 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         doctor: action.payload,
-      };
+      }
+      ;
     case types.GET_DOCTOR:
       return {
         ...state,
@@ -32,12 +34,24 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         patients: action.payload,
-      };
+      }
+    case types.GET_RECORDS:
+      return{
+        ...state,
+          records: action.payload,
+      }
+
+      ;
     case types.SET_MSG:
       return {
         ...state,
         ...initialState,
       };
+      case types.GET_FRAMES:
+        return {
+          ...state,
+          videoFrame: action.frames,
+        }
     case types.AUTHENTICATE:
       return {
         ...state,

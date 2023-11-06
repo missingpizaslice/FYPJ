@@ -36,3 +36,79 @@
     transform: rotate(360deg);
   }
 }
+
+.body-pk {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+  margin: 0;
+}
+
+.container-pk {
+  background-color: #f3f3f3;
+  border-radius: 8px;
+  padding: 80px;
+}
+
+.form-pk {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.form-pk input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.center-button-pk {
+  text-align: center;
+  width: 100%;
+}
+
+.center-button-pk button[type="submit"] {
+  padding: 10px 20px;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.form-pk select {
+  width: 110%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.center-button-pk button[type="submit"]:hover {
+  background-color: #4CAF50;
+}
+
+/* styles.css */
+
+/* styles.css */
+.date-filter {
+  position: relative;
+  left:45%;
+}
+/* Custom styles for the dropdown button */
+
+
+
+.app-wrapper {
+  background-color: #f8f9fa;
+}
