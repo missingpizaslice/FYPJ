@@ -37,7 +37,11 @@ def createDoctor():
 
     emailValid = True
 
-    # check if the email is already in use
+    doctor = doctorCollection.find_one({"email": request.json["email"]})
+
+    if doctor:
+        emailValid = False
+        return jsonify({"msg": "the email is already in use"})
 
     if re.match(emailRegex, request.json["email"].lower()):
         emailValid = True
@@ -67,6 +71,10 @@ def createDoctor():
     if request.json["password"] != request.json["confirmPassword"]:
         emailValid = False
         return jsonify({"msg": "the passwords do not match"})
+    
+    if request.json["staffType"] == "":
+        emailValid = False
+        return jsonify({"msg": "staff type cannot be empty"})
         
     if (emailValid):
         
@@ -219,6 +227,11 @@ def createPatient():
 
     nameIsUnique = False
 
+    validDate = True
+
+    if request.json["name"] == "":
+        validDate = False
+
     while nameIsUnique == False:
         username = hashlib.sha256(str(ObjectId()).encode()).hexdigest()[:7]
         alreadyExists = []
@@ -233,14 +246,14 @@ def createPatient():
     # encrypted_name = cipher_suite.encrypt(request.json["name"].encode()).decode()
     # encrypted_username = cipher_suite.encrypt(username.encode()).decode()
 
-
-    id = patientCollection.insert_one({
-        "doctorID": request.json["doctorID"],
-        "name": request.json["name"],
-        "username": username,
-        # "key": key
-    }).inserted_id
-    return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following username: " + username + " for them to access the pain analysis system."})
+    if validDate == True:
+        id = patientCollection.insert_one({
+            "doctorID": request.json["doctorID"],
+            "name": request.json["name"],
+            "username": username,
+            # "key": key
+        }).inserted_id
+        return jsonify({"id": str(ObjectId(id)), "msg": "New Patient Adeed Successfully. please provide the patient the following username: " + username + " for them to access the pain analysis system."})
 
 # get a list of all patients
 @app.route("/api/patient", methods=["GET"])
