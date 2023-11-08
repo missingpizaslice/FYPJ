@@ -23,31 +23,30 @@ const NewNotes = () => {
   
     const [selectedDateRange, setSelectedDateRange] = useState('All'); // Default option
     const today = new Date().toLocaleDateString();
-    const lastWeekDates = getLastWeekDates();
   
     useEffect(() => {
-      dispatch(getRecords(patient_id));
-    }, []);
+      dispatch(getRecords(patient_id,selectedDateRange));
+    }, [selectedDateRange]);
   
-    function getLastWeekDates() {
-      const today = new Date();
-      const lastWeekStartDate = new Date(today);
-      lastWeekStartDate.setDate(today.getDate() - 8); // Subtract 7 days to get the start of last week
+    // function getLastWeekDates() {
+    //   const today = new Date();
+    //   const lastWeekStartDate = new Date(today);
+    //   lastWeekStartDate.setDate(today.getDate() - 8); // Subtract 7 days to get the start of last week
     
-      const lastWeekEndDate = new Date(today);
-      lastWeekEndDate.setDate(today.getDate() - 1); // Subtract 1 day to get the end of last week
+    //   const lastWeekEndDate = new Date(today);
+    //   lastWeekEndDate.setDate(today.getDate() - 1); // Subtract 1 day to get the end of last week
     
-      return {
-        startDate: lastWeekStartDate,
-        endDate: lastWeekEndDate,
-      };
-    }
-    console.log(lastWeekDates)
+    //   return {
+    //     startDate: lastWeekStartDate,
+    //     endDate: lastWeekEndDate,
+    //   };
+    // }
+    // console.log(lastWeekDates)
   
       // Format the records with locale dates for filtering
       const recordsWithLocaleDates = records.map((record) => ({
         ...record,
-        datetime: new Date(record.datetime).toLocaleDateString(),
+        datetime: record.datetime,
       }));
   
       console.log("converted records",recordsWithLocaleDates)
@@ -67,7 +66,7 @@ const NewNotes = () => {
         const recordDate = new Date(record.datetime);
         xValues = uniqueDates.map((date) => new Date(date).toLocaleString('en-US', { weekday: 'long' }));
         return (
-          recordDate >= lastWeekDates.startDate && recordDate <= lastWeekDates.endDate
+          xValues
         );
       });
     } else if (selectedDateRange === 'All') {
