@@ -44,7 +44,7 @@ export default function Patient() {
         video.srcObject.getTracks()[0].stop();
         console.log(video.srcObject.getTracks()[0]);
       }
-    } 
+    }
     // in video on set to true, start broadcasting the video feed
     else {
       navigator.mediaDevices
@@ -75,7 +75,7 @@ export default function Patient() {
   return (
     <>
       <PatientNav />
-      <Container>
+      <Container sx={{marginTop: "130px"}}>
         <Box
           sx={{
             marginTop: 8,
@@ -107,7 +107,7 @@ export default function Patient() {
           </Box>
         </Box>
       </Container>
-      
+
       <Modal open={open}>
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">

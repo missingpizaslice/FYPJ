@@ -452,12 +452,12 @@ def open_opencv_window(username,activity,duration):
     USE_GPU = False
 
     try:
-        net =torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        net =torch.load("src\\model\\" + username + "_personalized_train.pth")
         print("welcome back! "+ username)
         training_required = False
     except:
         print("your profile is not found in the system, a personalized calibration is required")
-        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+        net = torch.load('src\\SGH_26to100_b2_e100.pth')
         training_required = True
 
 
@@ -572,7 +572,7 @@ def open_opencv_window(username,activity,duration):
 
 
 
-        torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        torch.save(net, "src\\model\\" + username + "_personalized_train.pth")
         text = "System calibration completed"
 
 
@@ -682,7 +682,8 @@ def open_opencv_window(username,activity,duration):
                         2,
                         cv2.LINE_4)
             current_time = datetime.datetime.now()
-            createRecord(username, activity,duration,text,current_time)
+            createRecord(username, activity,duration,text,current_time.strftime("%m/%d/%Y"))
+            # createRecord(username, activity,duration,text,"11/07/2023")
             cv2.namedWindow("AI pain detection - NYP", cv2.WINDOW_NORMAL)
             cv2.setWindowProperty('AI pain detection - NYP', cv2.WND_PROP_TOPMOST, 1)
             cv2.setWindowProperty('AI pain detection - NYP', cv2.WINDOW_FULLSCREEN, cv2.WND_PROP_TOPMOST)
