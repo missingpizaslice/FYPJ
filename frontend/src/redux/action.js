@@ -146,12 +146,15 @@ export const addPatientModel = (name) => {
 };
 
 
-export const getRecords = (id) => {
+export const getRecords = (id, date) => {
   return function (dispatch) {
+    // You can include the date in the API request if needed
     axios
-      .get(`${API}/api/record/${id}`)
+      .get(`${API}/api/record/${id}`, {
+        params: { date: date } // Include the date as a query parameter if needed
+      })
       .then((resp) => {
-        console.log(resp.data)
+        console.log(resp.data);
         dispatch(RecordsGet(resp.data));
       })
       .catch((err) => console.log(err));

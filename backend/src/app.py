@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 import re
 import hashlib
-
+from datetime import datetime, timedelta
 # from cryptography.fernet import Fernet
 # from cryptography.hazmat.primitives import hashes
 # from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -351,10 +351,27 @@ def createRecord(username, activity,duration,text,current_time):
 
 @app.route("/api/record/<id>", methods=["GET"])
 def getArrayofRecords(id):
+    date = request.args.get("date") 
+    print(date)
     records = []
-    for record in recordsCollection.find({"patientID": id}):
-        # Check if the painlevel is not "no face detected" or "System calibration completed"
-        if record["painlevel"] not in ["No face detected", "System calibration completed"]:
+    if date == "LastWeek":
+        # Calculate the date range for the last week
+        end_date = datetime.datetime.now()
+        formatted_date = end_date.strftime("%m/%d/%Y")
+        print(formatted_date)
+        start_date = (end_date - timedelta(days=7)).strftime("%m/%d/%Y")
+        print(start_date)
+        # Use the date range in your MongoDB query
+        for record in recordsCollection.find({
+            "patientID": id,
+            "datetime": {
+                "$gte": start_date,
+                "$lt": formatted_date
+            },
+            "painlevel": {
+                "$nin": ["No face detected", "System calibration completed","JUST CHECKING"]
+            }
+        }):
             records.append({
                 "id": str(ObjectId(record["_id"])),
                 "patientID": record["patientID"],
@@ -363,6 +380,19 @@ def getArrayofRecords(id):
                 "activity": record["activity"],
                 "duration": record["duration"],
             })
+    elif date == "All":
+        # Retrieve all records without date filtering
+        for record in recordsCollection.find({"patientID": id}):
+            # Check if the painlevel is not "no face detected" or "System calibration completed"
+            if record["painlevel"] not in ["No face detected", "System calibration completed"]:
+                records.append({
+                    "id": str(ObjectId(record["_id"])),
+                    "patientID": record["patientID"],
+                    "datetime": record["datetime"],
+                    "painlevel": record["painlevel"],
+                    "activity": record["activity"],
+                    "duration": record["duration"]
+                })
     return jsonify(records)
 
 
@@ -388,7 +418,7 @@ def open_opencv_window(username,activity,duration):
     LSTM_HIDDEN_DIM = 64  # 32 #64
 
     OUT_DIM = 3
-    text = "JUST CHECKING"
+    text = "System Calibration Completed"
 
     LEARNING_RATE = 0.05  # learning rate
     WEIGHT_DECAY = 1e-6  # not used as the number of epoches is only 8 or 10
