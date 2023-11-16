@@ -17,4 +17,3 @@ const DropdownFilter = ({ options, selectedOption, onChange }) => {
 };
 
 export default DropdownFilter;
-

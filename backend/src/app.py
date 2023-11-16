@@ -133,7 +133,8 @@ def getArrayofDoctors():
 # authenticate a staff member on login
 @app.route("/api/authenticate", methods=["POST"])
 def authenticateDoctor():
-    doctor = doctorCollection.find_one({"email": request.json["email"]})
+    email = request.json["email"].lower()
+    doctor = doctorCollection.find_one({"email": email})
     if doctor:
         
         hashed_password = doctor["password"]
@@ -311,6 +312,32 @@ def getPatientsbyDoctor(id):
         })
     return jsonify(patients)
 
+@app.route("/api/search", methods=["POST"])
+def searchPatientsbyDoctor():
+    search_string = request.json['search']
+    doctor_id = request.json['doctorID']
+    patients = []
+    for patient in patientCollection.find({
+        "$and": [
+            {"doctorID": doctor_id},
+            {"$or": [
+                {"username": {"$regex": f".*{search_string}.*", "$options" :'i'}},
+                {"name": {"$regex": f".*{search_string}.*", "$options" :'i'}}
+            ]}
+        ]
+    }):
+        # key = patient["key"]
+        # cipher_suite = Fernet(key)
+        # decrypted_name = cipher_suite.decrypt(patient["name"].encode()).decode()
+        # decrypted_username = cipher_suite.decrypt(patient["username"].encode()).decode()
+        patients.append({
+            "id": str(ObjectId(patient["_id"])),
+            "doctorID": patient["doctorID"],
+            "name": patient["name"],
+            "username": patient["username"],
+        })
+    return jsonify(patients)
+
 # get patient information by id
 @app.route("/api/patientOne/<id>", methods=["GET"])
 def getOnePatient(id):
@@ -462,12 +489,12 @@ def open_opencv_window(username,activity,duration):
     USE_GPU = False
 
     try:
-        net =torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        net =torch.load("src\\model\\" + username + "_personalized_train.pth")
         print("welcome back! "+ username)
         training_required = False
     except:
         print("your profile is not found in the system, a personalized calibration is required")
-        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+        net = torch.load('src\\SGH_26to100_b2_e100.pth')
         training_required = True
 
 
@@ -582,8 +609,8 @@ def open_opencv_window(username,activity,duration):
 
 
 
-        torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
-        text = "System calibration completed"
+        torch.save(net, "src\\model\\" + username + "_personalized_train.pth")
+        text = "System Calibration Completed"
 
 
 

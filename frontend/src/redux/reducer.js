@@ -22,8 +22,7 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         doctor: action.payload,
-      }
-      ;
+      };
     case types.GET_DOCTOR:
       return {
         ...state,
@@ -34,24 +33,27 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         patients: action.payload,
-      }
+      };
     case types.GET_RECORDS:
-      return{
+      return {
         ...state,
-          records: action.payload,
-      }
-
-      ;
+        records: action.payload,
+      };
     case types.SET_MSG:
       return {
         ...state,
         ...initialState,
       };
-      case types.GET_FRAMES:
-        return {
-          ...state,
-          videoFrame: action.frames,
-        }
+    case types.CLEAR_MSG:
+      return {
+        ...state,
+        msg: "",
+      };
+    case types.GET_FRAMES:
+      return {
+        ...state,
+        videoFrame: action.frames,
+      };
     case types.AUTHENTICATE:
       return {
         ...state,

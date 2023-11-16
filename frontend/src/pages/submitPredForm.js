@@ -1,22 +1,22 @@
-
-import React, { useEffect, useState,useRef } from 'react';
-import { getFrames } from '../redux/action';
+import React, { useEffect, useState, useRef } from "react";
+import { getFrames } from "../redux/action";
 import { useDispatch, connect } from "react-redux";
-
+import PatientNav from "../components/PatientNav";
+import { Container } from "@mui/system";
 
 const SubmitPredForm = () => {
-    return (
-        <div>
-            <h1>DOne</h1>
-        </div>
-    );
+  return (
+    <>
+      <PatientNav />
+
+      <Container sx={{ marginTop: "130px" }}>
+        <h1>Done</h1>
+      </Container>
+    </>
+  );
 };
 
 export default SubmitPredForm;
-
-
-
-
 
 //   const navigate = useNavigate();
 

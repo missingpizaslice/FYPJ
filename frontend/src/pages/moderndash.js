@@ -1,18 +1,18 @@
-import '../dash.css';
+import "../dash.css";
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useNavigate } from "react-router-dom";
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import { useSelector, useDispatch } from "react-redux";
 import { getRecords } from "../redux/action";
-import { Bar,Pie } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
-import FormControl from '@mui/material/FormControl';
+import FormControl from "@mui/material/FormControl";
 import { Grid } from "@mui/material";
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 
 const NewNotes = () => {
 

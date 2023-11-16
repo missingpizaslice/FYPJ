@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import PatientNav from "../components/PatientNav";
 import { useDispatch, useSelector } from "react-redux";
-import { loadsingleDoctor, loginAuth, setMessage } from "../redux/action";
+import { loadsingleDoctor, loginAuth, setMessage, getPatients } from "../redux/action";
 import { useNavigate } from "react-router-dom";
 
 // Material UI imports
@@ -31,17 +31,6 @@ export default function DoctorLogin() {
     dispatch(setMessage(""));
     setloginerror("");
     localStorage.clear();
-
-    document.body.style.opacity = 0;
-    const fadeIn = () => {
-      let opacity = parseFloat(document.body.style.opacity);
-      if (opacity < 1) {
-        opacity += 0.02;
-        document.body.style.opacity = opacity;
-        requestAnimationFrame(fadeIn);
-      }
-    };
-    requestAnimationFrame(fadeIn);
   }, []);
 
   // this function displays an error message if there is a problem with the signing in.

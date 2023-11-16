@@ -37,12 +37,12 @@ def open_opencv_window(username):
     USE_GPU = False
 
     try:
-        net =torch.load("C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        net =torch.load("src\\model\\" + username + "_personalized_train.pth")
         print("welcome back! "+ username)
         training_required = False
     except:
         print("your profile is not found in the system, a personalized calibration is required")
-        net = ('C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+        net = ('src\\SGH_26to100_b2_e100.pth')
         training_required = True
 
 
@@ -158,7 +158,7 @@ def open_opencv_window(username):
 
 
 
-        torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\lolz\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        torch.save(net, "src\\model\\" + username + "_personalized_train.pth")
         text = "System calibration completed"
 
 
