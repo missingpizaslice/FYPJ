@@ -245,7 +245,7 @@ export default function DoctorDashboard() {
                                   },
                                 }}
                                 onClick={() => {
-                                  sessionStorage.setItem('patient_id', patient.id);
+                                  sessionStorage.setItem('username', patient.username);
                                   navigate("/NewNotes")}
                                 }
                               >

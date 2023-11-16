@@ -107,7 +107,9 @@ label {
 }
 /* Custom styles for the dropdown button */
 
-
+.proper {
+  background-color: green;
+}
 
 .app-wrapper {
   background-color: #f8f9fa;

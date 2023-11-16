@@ -351,6 +351,7 @@ def createRecord(username, activity,duration,text,current_time):
 
 @app.route("/api/record/<id>", methods=["GET"])
 def getArrayofRecords(id):
+    print(id)
     date = request.args.get("date") 
     print(date)
     records = []
@@ -369,7 +370,7 @@ def getArrayofRecords(id):
                 "$lt": formatted_date
             },
             "painlevel": {
-                "$nin": ["No face detected", "System calibration completed","JUST CHECKING"]
+                "$nin": ["No face detected", "System calibration completed","JUST CHECKING","System Calibration Completed"]
             }
         }):
             records.append({
@@ -380,11 +381,45 @@ def getArrayofRecords(id):
                 "activity": record["activity"],
                 "duration": record["duration"],
             })
+
+            records = sorted(records, key=lambda x: datetime.datetime.strptime(x["datetime"], "%m/%d/%Y"))
+    elif date == "LastThreeMonths":
+        # Calculate the date range for the last 3 months
+        end_date = datetime.datetime.now()
+        formatted_date = end_date.strftime("%m/%d/%Y")
+        print(formatted_date)
+        start_date = (end_date - datetime.timedelta(days=90)).strftime("%m/%d/%Y")
+        print(start_date)
+
+        # Use the date range in your MongoDB query
+        for record in recordsCollection.find({
+            "patientID": id,
+            "datetime": {
+                "$gte": start_date,
+                "$lt": formatted_date
+            },
+            "painlevel": {
+                "$nin": ["No face detected", "System calibration completed", "JUST CHECKING", "System Calibration Completed"]
+            }
+        }):
+            datetime_str = record["datetime"]
+            datetime_object = datetime.datetime.strptime(datetime_str, '%m/%d/%Y')
+            month_only = datetime_object.strftime('%m')
+
+            records.append({
+                "id": str(ObjectId(record["_id"])),
+                "patientID": record["patientID"],
+                "datetime": month_only,
+                "painlevel": record["painlevel"],
+                "activity": record["activity"],
+                "duration": record["duration"],
+            })
+            records = sorted(records, key=lambda x: datetime.datetime.strptime(x["datetime"], "%m"))
     elif date == "All":
         # Retrieve all records without date filtering
         for record in recordsCollection.find({"patientID": id}):
             # Check if the painlevel is not "no face detected" or "System calibration completed"
-            if record["painlevel"] not in ["No face detected", "System calibration completed"]:
+            if record["painlevel"] not in ["No face detected", "System calibration completed","System Calibration Completed"]:
                 records.append({
                     "id": str(ObjectId(record["_id"])),
                     "patientID": record["patientID"],
@@ -393,6 +428,7 @@ def getArrayofRecords(id):
                     "activity": record["activity"],
                     "duration": record["duration"]
                 })
+        records = sorted(records, key=lambda x: datetime.datetime.strptime(x["datetime"], "%m/%d/%Y"))
     return jsonify(records)
 
 
@@ -400,7 +436,7 @@ def getArrayofRecords(id):
 @app.route('/start_opencv',methods=['POST'])
 def start_opencv():
     username = request.json["name"]
-    patient_name = patientCollection.find_one({"_id":ObjectId(username)})
+    patient_name = patientCollection.find_one({"username":username})
     if patient_name:
         activity = request.json["activity"]
         duration = request.json["duration"]
@@ -655,8 +691,8 @@ def open_opencv_window(username,activity,duration):
                         (0, 0, 255),  # B, G, R
                         2,
                         cv2.LINE_4)
-            current_time = datetime.datetime.now()
-            createRecord(username, activity,duration,text,current_time)
+            current_time = datetime.datetime.now().strftime("%m/%d/%Y")
+            createRecord(username, activity,duration,text,"10/07/2023")
             cv2.namedWindow("AI pain detection - NYP", cv2.WINDOW_NORMAL)
             cv2.setWindowProperty('AI pain detection - NYP', cv2.WND_PROP_TOPMOST, 1)
             cv2.setWindowProperty('AI pain detection - NYP', cv2.WINDOW_FULLSCREEN, cv2.WND_PROP_TOPMOST)

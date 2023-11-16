@@ -17,31 +17,38 @@ import Container from '@mui/material/Container';
 const NewNotes = () => {
 
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
     const { records } = useSelector((state) => state.data);
-    const patient_id = sessionStorage.getItem('patient_id');
+    const patient_id = sessionStorage.getItem('username');
   
     const [selectedDateRange, setSelectedDateRange] = useState('All'); // Default option
     const today = new Date().toLocaleDateString();
   
     useEffect(() => {
-      dispatch(getRecords(patient_id,selectedDateRange));
+      const fetchData = async () => {
+        try {
+          // Set loading to true before dispatch
+          setLoading(true);
+    
+          // Dispatch your action, assuming getRecords returns a Promise
+          await dispatch(getRecords(patient_id, selectedDateRange));
+    
+          // Other logic after dispatch (optional)
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          // Handle errors if needed
+        } finally {
+          // Set loading to false after the dispatch is completed (whether it succeeds or fails)
+          setLoading(false);
+        }
+      };
+    
+      fetchData();
     }, [selectedDateRange]);
+    
+    
   
-    // function getLastWeekDates() {
-    //   const today = new Date();
-    //   const lastWeekStartDate = new Date(today);
-    //   lastWeekStartDate.setDate(today.getDate() - 8); // Subtract 7 days to get the start of last week
-    
-    //   const lastWeekEndDate = new Date(today);
-    //   lastWeekEndDate.setDate(today.getDate() - 1); // Subtract 1 day to get the end of last week
-    
-    //   return {
-    //     startDate: lastWeekStartDate,
-    //     endDate: lastWeekEndDate,
-    //   };
-    // }
-    // console.log(lastWeekDates)
   
       // Format the records with locale dates for filtering
       const recordsWithLocaleDates = records.map((record) => ({
@@ -49,41 +56,37 @@ const NewNotes = () => {
         datetime: record.datetime,
       }));
   
-      console.log("converted records",recordsWithLocaleDates)
   
     
     // Add a variable to store the filtered data based on the date range
     let filteredData = recordsWithLocaleDates;
     const uniqueDates = [...new Set(recordsWithLocaleDates.map((record) => record.datetime))];
+
     let xValues;
-    
-    if (selectedDateRange === 'Today') {
-      filteredData = filteredData.filter(
-        (record) => record.datetime === today
-      );
-    } else if (selectedDateRange === 'LastWeek') {
+
+    if (selectedDateRange === 'LastWeek') {
       filteredData = filteredData.filter((record) => {
-        const recordDate = new Date(record.datetime);
         xValues = uniqueDates.map((date) => new Date(date).toLocaleString('en-US', { weekday: 'long' }));
-        return (
-          xValues
-        );
+        return xValues;
+      });
+    } else if (selectedDateRange === 'LastThreeMonths') {
+    
+      filteredData = filteredData.filter((record) => {
+        xValues = uniqueDates.map((date) => new Date(date).toLocaleString('en-US', { month: 'short' }));
+
+    
+        return xValues;
       });
     } else if (selectedDateRange === 'All') {
       xValues = uniqueDates.map((date) => new Date(date).toLocaleString('en-US', { day: '2-digit', month: 'short' }));
     }
-    
-    // Continue with the rest of your code using the filteredData
-  
-  
+
   
     // Create data for the stacked bar chart
     const durationLabels = [...new Set(filteredData.map((record) => record.duration))];
     const uniquePainLevels = [...new Set(filteredData.map((record) => record.painlevel))];
     const uniqueActivities = [...new Set(filteredData.map((record) => record.activity))];
-    console.log(uniqueActivities)
     const PiePainLevels = [...new Set(filteredData.filter((record) => record.painlevel === 'Pain'))];
-    console.log("pie",PiePainLevels)
   
     // Define a color mapping for each painlevel
     const painLevelColors = {
@@ -102,12 +105,13 @@ const NewNotes = () => {
     }
   
     let bardata;
-    
     if (uniquePainLevels && uniqueDates && filteredData) {
       const datasets = uniquePainLevels.map((painlevel) => {
         const dataCounts = uniqueDates.map((date) => {
           const count = filteredData.filter((record) => record.painlevel === painlevel && record.datetime === date).length;
-          return count;
+          const totalForDuration = filteredData.filter((record) => record.datetime === date).length;
+          const percentage = ((count / totalForDuration) * 100).toFixed(2);
+          return percentage;
         });
     
         return {
@@ -122,19 +126,20 @@ const NewNotes = () => {
         datasets,
       };
     }
+
+    
+    
     
     
     
     
     const backgroundColors = uniqueActivities.map(() => getRandomColor());
-    console.log("PAIN",uniquePainLevels)
   
     const datasets = uniquePainLevels.map((painlevel) => {
       const dataPercentages = durationLabels.map((duration) => {
         const count = filteredData.filter((record) => record.painlevel === painlevel && record.duration === duration).length;
         const totalForDuration = filteredData.filter((record) => record.duration === duration).length;
         const percentage = ((count / totalForDuration) * 100).toFixed(2);
-        console.log("%",percentage)
         return percentage;
       });
     
@@ -176,122 +181,128 @@ const NewNotes = () => {
     };
 
     return (
-        <>
-        <PatientNav/>
-    <div class="app-wrapper">
-	    
-	    <div class="app-content pt-3 p-md-3 p-lg-4">
-		    <div class="container-xl">
-			    
-<div class="pb-3 pr-3">
-          <FormControl className="date-filter" variant="outlined" fullWidth style={{marginTop: "16px",maxWidth: 110 }}> 
-    <Select
-  value={selectedDateRange}
-  onChange={(e) => setSelectedDateRange(e.target.value)}
->
-  <MenuItem value="All">All</MenuItem>
-  <MenuItem value="Today">Today</MenuItem>
-  <MenuItem value="LastWeek">Last Week</MenuItem>
-</Select>
-  </FormControl>
-  </div>
-  
-  <Grid className="bar g-4 mb-4" item xs={6}>
-    <Box>
-  <div class="app-card app-card-chart h-100 shadow-sm">
-					        <div class="app-card-header p-3">
-						        <div class="row justify-content-between align-items-center">
-							        <div class="col-auto">
-						                <h4 class="app-card-title">Overall Pain Distribution</h4>
-							        </div>
-						        </div>
-					        </div>
-					        <div class="app-card-body p-3">
-                  <div style={{ height: '250px' }}>
-  <Bar
-    data={bardata}
-    options={{
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          stacked: true,
-          maxBarThickness: 40,
-        },
-        y: {
-          stacked: true,
-        },
-      },
-    }}
-  />
-</div>
-					        </div>
-				        </div>
-                </Box>
-  </Grid>
-			    <div class="row g-4 mb-4">
-			        <div class="col-12 col-lg-6">
-				        <div class="app-card app-card-chart h-100 shadow-sm">
-					        <div class="app-card-header p-3">
-						        <div class="row justify-content-between align-items-center">
-							        <div class="col-auto">
-						                <h4 class="app-card-title">Pain Distribution After Painkiller Taken</h4>
-							        </div>
-						        </div>
-					        </div>
-					        <div class="app-card-body p-3">
-                                <div style={{ height: '250px' }}>
-                                    <Bar
-    data={data}
-    options={{
-      maintainAspectRatio: false,
-        indexAxis: 'y', // Use the 'y' axis for horizontal bars
-        elements: {
-          bar: {
-            borderWidth: 1,
-          },
-        },
-        responsive: true,
-        scales: {
-          x: {
-            stacked: true,
-          },
-          y: {
-            stacked: true,
-            beginAtZero: true, // Ensure the y-axis starts at zero
-            max: 100, // Set the maximum value to 100 for 100% stacking
-          },
-        },
-    }}
-  />
-  </div>
-					        </div>
-				        </div>
-			        </div>
-			        <div class="col-12 col-lg-6">
-				        <div class="app-card app-card-chart h-100 shadow-sm">
-					        <div class="app-card-header p-3">
-						        <div class="row justify-content-between align-items-center">
-							        <div class="col-auto">
-						                <h4 class="app-card-title">Distribution of Pain in Activities</h4>
-							        </div>
-						        </div>
-					        </div>
-					        <div class="app-card-body ">
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',maxHeight:'250px' }}>
-    <Pie 
-    data={piesdata} 
-    options={options}/>
-  </div>
-					        </div>
-				        </div>
-			        </div>
-			        
-			    </div>
-			    
-		    </div>
-	    </div></div>
-</>
-);
-};
+      <>
+        <PatientNav />
+        <div class="app-wrapper">
+          <div class="app-content pt-3 p-md-3 p-lg-4">
+            <div class="container-xl">
+              <div class="pb-3 pr-3">
+                <FormControl className="date-filter" variant="outlined" fullWidth style={{ marginTop: "50px", maxWidth: 110 }}>
+                  <Select
+                    value={selectedDateRange}
+                    onChange={(e) => setSelectedDateRange(e.target.value)}
+                  >
+                    <MenuItem value="All">All</MenuItem>
+                    <MenuItem value="LastThreeMonths">Last Three Months</MenuItem>
+                    <MenuItem value="LastWeek">Last Week</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+              <Grid className="bar g-4 mb-4" item xs={6}>
+                {loading ? (
+                  <div className="loader-container">
+                    <h1 className='lol'>Loading ...</h1>
+                    <div className="spinner"></div>
+                  </div>
+                ) : (
+                  <>
+                    <Box className='proper'>
+                      <div class="app-card app-card-chart h-100 shadow-sm">
+                        <div class="app-card-header p-3">
+                          <div class="row justify-content-between align-items-center">
+                            <div class="col-auto">
+                              <h4 class="app-card-title">Overall Pain Distribution</h4>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="app-card-body p-3">
+                          <div style={{ height: '250px' }}>
+                            <Bar
+                              data={bardata}
+                              options={{
+                                maintainAspectRatio: false,
+                                scales: {
+                                  x: {
+                                    stacked: true,
+                                    maxBarThickness: 40,
+                                  },
+                                  y: {
+                                    stacked: true,
+                                    beginAtZero: true,
+                                    max: 100,
+                                  },
+                                },
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </Box>
+                  </>
+                )}
+              </Grid>
+              <div class="row g-4 mb-4">
+                <div class="col-12 col-lg-6">
+                  <div class="app-card app-card-chart h-100 shadow-sm">
+                    <div class="app-card-header p-3">
+                      <div class="row justify-content-between align-items-center">
+                        <div class="col-auto">
+                          <h4 class="app-card-title">Pain Distribution After Painkiller Taken</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="app-card-body p-3">
+                      <div style={{ height: '250px' }}>
+                        <Bar
+                          data={data}
+                          options={{
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            elements: {
+                              bar: {
+                                borderWidth: 1,
+                              },
+                            },
+                            responsive: true,
+                            scales: {
+                              x: {
+                                stacked: true,
+                              },
+                              y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                max: 100,
+                              },
+                            },
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                  <div class="app-card app-card-chart h-100 shadow-sm">
+                    <div class="app-card-header p-3">
+                      <div class="row justify-content-between align-items-center">
+                        <div class="col-auto">
+                          <h4 class="app-card-title">Distribution of Pain in Activities</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="app-card-body ">
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', maxHeight: '250px' }}>
+                        <Pie data={piesdata} options={options} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+                        };    
+    
 
-export default NewNotes;
+export default NewNotes

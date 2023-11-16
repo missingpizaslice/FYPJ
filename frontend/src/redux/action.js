@@ -147,19 +147,22 @@ export const addPatientModel = (name) => {
 
 
 export const getRecords = (id, date) => {
-  return function (dispatch) {
-    // You can include the date in the API request if needed
-    axios
-      .get(`${API}/api/record/${id}`, {
+  return async function (dispatch) {
+    try {
+      // You can include the date in the API request if needed
+      const response = await axios.get(`${API}/api/record/${id}`, {
         params: { date: date } // Include the date as a query parameter if needed
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        dispatch(RecordsGet(resp.data));
-      })
-      .catch((err) => console.log(err));
+      });
+
+      console.log(response.data);
+      dispatch(RecordsGet(response.data));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // Handle errors if needed
+    }
   };
 };
+
 
 export const getFrames = (data) => {
   return function (dispatch) {
