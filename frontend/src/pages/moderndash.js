@@ -305,4 +305,4 @@ const NewNotes = () => {
                         };    
     
 
-export default NewNotes
+export default NewNotes;
