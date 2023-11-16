@@ -44,6 +44,11 @@ export const setMessage = (msg) => ({
   payload: msg,
 });
 
+export const clearMessage = (msg) => ({
+  type: types.CLEAR_MSG,
+  payload: msg,
+});
+
 export const searchPatient = (patients) => ({
   type: types.SET_PATIENT_VALUE,
   payload: patients,

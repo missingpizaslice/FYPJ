@@ -133,7 +133,8 @@ def getArrayofDoctors():
 # authenticate a staff member on login
 @app.route("/api/authenticate", methods=["POST"])
 def authenticateDoctor():
-    doctor = doctorCollection.find_one({"email": request.json["email"]})
+    email = request.json["email"].lower()
+    doctor = doctorCollection.find_one({"email": email})
     if doctor:
         
         hashed_password = doctor["password"]
@@ -395,7 +396,7 @@ def getArrayofRecords(id):
                 "$lt": formatted_date
             },
             "painlevel": {
-                "$nin": ["No face detected", "System calibration completed","JUST CHECKING"]
+                "$nin": ["No face detected", "System Calibration Completed","JUST CHECKING"]
             }
         }):
             records.append({
@@ -410,7 +411,7 @@ def getArrayofRecords(id):
         # Retrieve all records without date filtering
         for record in recordsCollection.find({"patientID": id}):
             # Check if the painlevel is not "no face detected" or "System calibration completed"
-            if record["painlevel"] not in ["No face detected", "System calibration completed"]:
+            if record["painlevel"] not in ["No face detected", "System Calibration Completed"]:
                 records.append({
                     "id": str(ObjectId(record["_id"])),
                     "patientID": record["patientID"],
@@ -573,7 +574,7 @@ def open_opencv_window(username,activity,duration):
 
 
         torch.save(net, "src\\model\\" + username + "_personalized_train.pth")
-        text = "System calibration completed"
+        text = "System Calibration Completed"
 
 
 
