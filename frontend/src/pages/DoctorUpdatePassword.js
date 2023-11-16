@@ -46,17 +46,6 @@ export default function DoctorUpdatePassword() {
     setupdatefinished(false);
     dispatch(setMessage(""));
     setloginerror("");
-
-    document.body.style.opacity = 0;
-    const fadeIn = () => {
-      let opacity = parseFloat(document.body.style.opacity);
-      if (opacity < 1) {
-        opacity += 0.02;
-        document.body.style.opacity = opacity;
-        requestAnimationFrame(fadeIn);
-      }
-    };
-    requestAnimationFrame(fadeIn);
   }, []);
 
   useEffect(() => {

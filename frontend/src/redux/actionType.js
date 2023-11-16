@@ -15,3 +15,4 @@ export const AUTHENTICATE = "AUTHENTICATE";
 export const  auth_model = "auth_model"
 export const GET_FRAMES = "GET_FRAMES"
 export const UPDATE_PASSWORD = "UPDATE_PASSWORD";
+export const CLEAR_MSG = "CLEAR_MSG";

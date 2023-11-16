@@ -77,7 +77,6 @@ git push
 git checkout -b "<name of your branch>"
 
 cd backend
-venv/Scripts/activate
 python src/app.py
 
 cd frontend

@@ -7,6 +7,8 @@ import {
   getPatients,
   addPatient,
   searchPatient,
+  setMessage,
+  clearMessage,
 } from "../redux/action";
 
 import Box from "@mui/material/Box";
@@ -18,14 +20,14 @@ import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
 import { CircularProgress, Grid } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import Pagination from "@mui/material/Pagination"
+import Pagination from "@mui/material/Pagination";
 import { FormControl, TextField, Tooltip } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import InsightsIcon from "@mui/icons-material/Insights";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 const inital = {
   search: "",
@@ -61,6 +63,9 @@ export default function DoctorDashboard() {
   const displayPatients = filterPatients.slice(startIndex, endIndex);
 
   useEffect(() => {
+    console.log("message on load" + msg);
+    dispatch(getPatients(doctorData.doctor_id));
+
     if (
       doctorData == null ||
       !doctorData.doctor_id ||
@@ -69,33 +74,14 @@ export default function DoctorDashboard() {
       navigate("/doctorLogin");
       return;
     }
-
-    dispatch(getPatients(doctorData.doctor_id));
-
-    document.body.style.opacity = 0;
-    const fadeIn = () => {
-      let opacity = parseFloat(document.body.style.opacity);
-      if (opacity < 1) {
-        opacity += 0.02;
-        document.body.style.opacity = opacity;
-        requestAnimationFrame(fadeIn);
-      }
-    };
-    requestAnimationFrame(fadeIn);
   }, []);
 
-  useEffect(() => {
-    if (msg) {
-      setfinishedCreating(true);
-    }
-  }, [msg]);
-
   // this function closes the success pop up modal
-  const handleClose = (event, reason) => {
-    if (reason !== "backdropClick") {
-      setfinishedCreating(false);
-      setstate(inital);
-    }
+  const handleClose = (e) => {
+    e.preventDefault();
+    dispatch(clearMessage(""));
+    setfinishedCreating(false);
+    console.log("message on hannlde close" + msg);
   };
 
   const handleChange = (e) => {
@@ -105,10 +91,20 @@ export default function DoctorDashboard() {
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    const patientDetails = { name: patientName, doctorID: doctorData.doctor_id };
+    const patientDetails = {
+      name: patientName,
+      doctorID: doctorData.doctor_id,
+    };
     setOpen(false);
     dispatch(addPatient(patientDetails));
   };
+
+  useEffect(() => {
+    if (msg) {
+      console.log("message on message value change " + msg);
+      setfinishedCreating(true);
+    }
+  }, [msg]);
 
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -155,10 +151,11 @@ export default function DoctorDashboard() {
                         placeholder="Patient Search"
                         name="search"
                         onChange={handleSearchInputChange}
+                        // onKeyDown={handlesearch}
                       />
                     </FormControl>
                     <Tooltip
-                      title={<h2>Add Patient</h2>}
+                      title="Add Patient"
                       placement="left"
                       arrow
                     >
@@ -225,34 +222,34 @@ export default function DoctorDashboard() {
                         >
                           View Records
                         </Button> */}
-                            <Tooltip
-                              title={<h2>View Records</h2>}
-                              placement="top"
-                              arrow
-                            >
-                              <Button
-                                size="large"
-                                variant="primary"
-                                sx={{
-                                  marginLeft: { xs: "0", md: "auto" },
-                                  marginTop: { xs: "0px", md: "10px" },
-                                  height: "63px",
-                                  borderRadius: "50%",
-                                  transition: "0.3s",
-                                  "&:hover": {
-                                    backgroundColor: "#2e79d5", // Change the background color on hover
-                                    color: "white", // Change the text color on hover
-                                  },
-                                }}
-                                onClick={() => {
-                                  sessionStorage.setItem('patient_id', patient.id);
-                                  navigate("/NewNotes")}
-                                }
-                              >
-                                <DashboardIcon />
-                              </Button>
-                            </Tooltip>
-                          {/* </CardActions> */}
+                        <Tooltip
+                          title="View Records"
+                          placement="top"
+                          arrow
+                        >
+                          <Button
+                            size="large"
+                            variant="primary"
+                            sx={{
+                              marginLeft: { xs: "0", md: "auto" },
+                              marginTop: { xs: "0px", md: "10px" },
+                              height: "63px",
+                              borderRadius: "50%",
+                              transition: "0.3s",
+                              "&:hover": {
+                                backgroundColor: "#2e79d5", // Change the background color on hover
+                                color: "white", // Change the text color on hover
+                              },
+                            }}
+                            onClick={() => {
+                              sessionStorage.setItem("patient_id", patient.id);
+                              navigate("/NewNotes");
+                            }}
+                          >
+                            <DashboardIcon />
+                          </Button>
+                        </Tooltip>
+                        {/* </CardActions> */}
                         {/* </Grid> */}
                       </Grid>
                     </Card>

@@ -75,7 +75,7 @@ export default function Patient() {
   return (
     <>
       <PatientNav />
-      <Container sx={{marginTop: "130px"}}>
+      <Container sx={{ marginTop: "130px" }}>
         <Box
           sx={{
             marginTop: 8,

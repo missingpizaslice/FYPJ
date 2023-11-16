@@ -61,17 +61,6 @@ export default function AdminDashboard() {
 
     console.log(doctorData);
     dispatch(getDoctors());
-
-    document.body.style.opacity = 0;
-    const fadeIn = () => {
-      let opacity = parseFloat(document.body.style.opacity);
-      if (opacity < 1) {
-        opacity += 0.02;
-        document.body.style.opacity = opacity;
-        requestAnimationFrame(fadeIn);
-      }
-    };
-    requestAnimationFrame(fadeIn);
   }, []);
 
   const handleChange = (e) => {
@@ -119,7 +108,7 @@ export default function AdminDashboard() {
                     </FormControl>
                     <Box sx={{ "& > :not(style)": { m: 1 } }}>
                       <Tooltip
-                        title={<h2>Add Doctor</h2>}
+                        title="Add Doctor"
                         placement="left"
                         arrow
                       >
@@ -195,19 +184,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-const fadeIn = `
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-`;
-
-// Add the CSS to the head of the document
-const style = document.createElement("style");
-style.innerHTML = fadeIn;
-document.head.appendChild(style);
