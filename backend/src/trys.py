@@ -492,12 +492,12 @@ def webcam():
 
 def check_users(username):
     try:
-        net = torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        net = torch.load("src\\model\\" + username + "_personalized_train.pth")
         print("Welcome back, {}!".format(username))
         training_required = False
     except FileNotFoundError:
         print("Your profile is not found in the system. Personalized calibration is required.")
-        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+        net = torch.load('src\\SGH_26to100_b2_e100.pth')
         training_required = True
 
     return training_required,net
@@ -505,7 +505,7 @@ def check_users(username):
 @app.route('/check_user', methods=['POST'])
 def check_user():
     print("Your profile is not found in the system. Personalized calibration is required.")
-    net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+    net = torch.load('src\\SGH_26to100_b2_e100.pth')
     username = request.json["name"]
     base = 2
     IN_DIM = int(936 * 60 / base)  # always use 60 / base number to get the final datapoints, e.g. 60 / base_2 = 30
@@ -611,14 +611,14 @@ def check_user():
 
 
 
-    torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+    torch.save(net, "src\\model\\" + username + "_personalized_train.pth")
     text = "System calibration completed"
 
     return jsonify({"msg": "Training Done"})
 
     
 def generate_frames(username,activity,duration):
-    net = torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+    net = torch.load("src\\model\\" + username + "_personalized_train.pth")
     net.eval()
     text = "System Calibration Completed"
 

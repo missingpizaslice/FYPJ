@@ -475,6 +475,7 @@ def start_opencv():
     print(username)
     patient_name = patientCollection.find_one({"username": username})
     if patient_name:
+        print("welcome back! "+ username)
         activity = request.json["activity"]
         duration = request.json["duration"]
         nameCollection.insert_one({

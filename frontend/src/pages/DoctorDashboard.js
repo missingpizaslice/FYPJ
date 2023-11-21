@@ -52,7 +52,8 @@ export default function DoctorDashboard() {
   const filterPatients = patients.filter(
     (patient) =>
       patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.id.includes(searchQuery.toLowerCase())
+      patient.id.includes(searchQuery.toLowerCase()) || 
+      patient.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const [page, setPage] = useState(1);
@@ -154,11 +155,7 @@ export default function DoctorDashboard() {
                         // onKeyDown={handlesearch}
                       />
                     </FormControl>
-                    <Tooltip
-                      title="Add Patient"
-                      placement="left"
-                      arrow
-                    >
+                    <Tooltip title="Add Patient" placement="left" arrow>
                       <Fab
                         variant="contained"
                         color="primary"
@@ -222,34 +219,37 @@ export default function DoctorDashboard() {
                         >
                           View Records
                         </Button> */}
-                            <Tooltip
-                              title={<h2>View Records</h2>}
-                              placement="top"
-                              arrow
-                            >
-                              <Button
-                                size="large"
-                                variant="primary"
-                                sx={{
-                                  marginLeft: { xs: "0", md: "auto" },
-                                  marginTop: { xs: "0px", md: "10px" },
-                                  height: "63px",
-                                  borderRadius: "50%",
-                                  transition: "0.3s",
-                                  "&:hover": {
-                                    backgroundColor: "#2e79d5", // Change the background color on hover
-                                    color: "white", // Change the text color on hover
-                                  },
-                                }}
-                                onClick={() => {
-                                  sessionStorage.setItem('username', patient.username);
-                                  navigate("/NewNotes")}
-                                }
-                              >
-                                <DashboardIcon />
-                              </Button>
-                            </Tooltip>
-                          {/* </CardActions> */}
+                        <Tooltip
+                          title={"View Records"}
+                          placement="top"
+                          arrow
+                        >
+                          <Button
+                            size="large"
+                            variant="primary"
+                            sx={{
+                              marginLeft: { xs: "0", md: "auto" },
+                              marginTop: { xs: "0px", md: "10px" },
+                              height: "63px",
+                              borderRadius: "50%",
+                              transition: "0.3s",
+                              "&:hover": {
+                                backgroundColor: "#2e79d5", // Change the background color on hover
+                                color: "white", // Change the text color on hover
+                              },
+                            }}
+                            onClick={() => {
+                              sessionStorage.setItem(
+                                "username",
+                                patient.username
+                              );
+                              navigate("/NewNotes");
+                            }}
+                          >
+                            <DashboardIcon />
+                          </Button>
+                        </Tooltip>
+                        {/* </CardActions> */}
                         {/* </Grid> */}
                       </Grid>
                     </Card>
