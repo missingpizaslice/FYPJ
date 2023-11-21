@@ -86,7 +86,7 @@ export default function Patient() {
         >
           <Box
             sx={{
-              maxWidth: "800px",
+              maxWidth: "640px",
               marginBottom: "70px",
               boxShadow: 2,
               padding: "50px",
@@ -97,14 +97,15 @@ export default function Patient() {
               <video sx={{ width: "100%", maxWidth: "640px" }} ref={videoRef} />
             </Container>
 
-            <Button
+          </Box>
+          
+          <Button
               variant="contained"
               sx={{ margin: 2, padding: "10px" }}
               onClick={startWebCam}
             >
               {videoOn ? "Stop" : "Start"}
             </Button>
-          </Box>
         </Box>
       </Container>
 

@@ -64,6 +64,11 @@ const FramesGet = (frames) => ({
   payload: frames,
 })
 
+const train_model_message = (msg) => ({
+  type: types.SEND_NAME,
+  payload: msg,
+});
+
 
 // ==================== Actions ====================
 
@@ -137,17 +142,27 @@ export const getDoctors = () => {
 
 
 export const addPatientModel = (name) => {
-  return function (dispatch){
-    console.log(name)
+  return function (dispatch) {
+    console.log(name);
     axios
       .post(`${API}/start_opencv`, name)
       .then((resp) => {
-        if (resp.data.msg) {
-        dispatch(auth_msg_model(resp.data.msg));
-        }
+        console.log(resp.data.msg)
+          dispatch(auth_msg_model(resp.data.msg));
       })
-      .catch((err) => console.log(err));
-  };
+};
+};
+
+export const sendnameback = (name) => {
+  return function (dispatch) {
+    console.log("action.js",name);
+    axios
+      .post(`${API}/check_user`, name)
+      .then((resp) => {
+        console.log(resp.data.msg)
+          dispatch(train_model_message(resp.data.msg));
+      })
+};
 };
 
 

@@ -1,5 +1,6 @@
 import "../dash.css";
 import React, { useState, useEffect } from "react";
+import Chart from "chart.js/auto";
 import PatientNav from "../components/PatientNav";
 import { useNavigate } from "react-router-dom";
 import MenuItem from "@mui/material/MenuItem";

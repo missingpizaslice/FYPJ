@@ -39,6 +39,15 @@ code {
   animation: spin-anim 1.2s linear infinite;
 }
 
+.spinners {
+  width: 64px;
+  height: 64px;
+  border: 8px solid;
+  border-color: #3d5af1 transparent #3d5af1 transparent;
+  border-radius: 50%;
+  animation: spin-anim 1.2s linear infinite;
+}
+
 @keyframes spin-anim {
   0% {
       transform: rotate(0deg);
@@ -47,3 +56,56 @@ code {
       transform: rotate(360deg);
   }
 }
+
+.modal-content {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f1f1f1;
+  padding: 40px;
+  border-radius: 3px;
+  min-width: 600px;
+  min-width: 300px;
+}
+
+
+
+.progressbar{
+	position: relative;
+	overflow: hidden;
+	width: 350px;
+	height: 35px;
+	border-radius: 5px;
+	background-color: lightgray;
+}
+
+.progressPercent{
+	font-weight: 600;
+	font-family:'Franklin Gothic Medium';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%,-50%);
+	color: #eee;
+	text-shadow: -1px 0 #555, 0 1px #555, 1px 0 #555, 0 -1px #555;
+}
+
+.modal, .overlay {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+}
+.overlay {
+    background: rgba(49,49,49,0.8);
+}
+
+.buttons:hover{
+	-webkit-box-shadow: inset 120px 0 0 0 #563e8a;
+    box-shadow: inset 120px 0 0 0 #7c54d1;
+}
+

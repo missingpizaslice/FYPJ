@@ -108,4 +108,5 @@ def keypoints_extract(painornot, nseconds):
             if cv2.waitKey(5) & 0xFF == 27:
                 break
         cap.release()
+        cv2.destroyAllWindows()
         return train_data

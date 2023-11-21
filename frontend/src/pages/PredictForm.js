@@ -27,8 +27,15 @@ function YourForm() {
     setloginerror("");
     // Check if the authentication process returns an error
     if (msg === "the account does not exist") {
+      // sessionStorage.clear("")
       setloginerror(msg);
       console.log(loginerror);
+    }
+    else if (msg === "Account exists with model"){      
+      navigate("/Webcam")
+    }
+    else if (msg === "Account exists without model"){
+      navigate("/Training_page")
     }
   }, [msg]);
 
@@ -51,13 +58,14 @@ function YourForm() {
       activity: activity,
       duration: duration,
     };
-    // Handle form submission here, e.g., send the 'name' to your server
+    // sessionStorage.setItem('data', JSON.stringify(initial));
+    // // Handle form submission here, e.g., send the 'name' to your server
+    sessionStorage.setItem("data",JSON.stringify(initial))
     dispatch(addPatientModel(initial));
     setName("");
     setActivity("");
     setDuration("");
 
-    navigate("/submitPredForm");
   };
 
   return (
