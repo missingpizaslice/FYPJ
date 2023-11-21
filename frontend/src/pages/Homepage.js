@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import Button from "@mui/material/Button";
 import { Grid, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
@@ -6,7 +6,10 @@ import PatientNav from "../components/PatientNav";
 import { useNavigate } from "react-router-dom";
 
 function Homepage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
 
   return (
     <>

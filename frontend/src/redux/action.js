@@ -64,6 +64,11 @@ const FramesGet = (frames) => ({
   payload: frames,
 })
 
+const train_model_message = (msg) => ({
+  type: types.SEND_NAME,
+  payload: msg,
+});
+
 
 // ==================== Actions ====================
 
@@ -137,34 +142,47 @@ export const getDoctors = () => {
 
 
 export const addPatientModel = (name) => {
-  return function (dispatch){
-    console.log(name)
+  return function (dispatch) {
+    console.log(name);
     axios
       .post(`${API}/start_opencv`, name)
       .then((resp) => {
-        if (resp.data.msg) {
-        dispatch(auth_msg_model(resp.data.msg));
-        }
+        console.log(resp.data.msg)
+          dispatch(auth_msg_model(resp.data.msg));
       })
-      .catch((err) => console.log(err));
-  };
+};
+};
+
+export const sendnameback = (name) => {
+  return function (dispatch) {
+    console.log("action.js",name);
+    axios
+      .post(`${API}/check_user`, name)
+      .then((resp) => {
+        console.log(resp.data.msg)
+          dispatch(train_model_message(resp.data.msg));
+      })
+};
 };
 
 
 export const getRecords = (id, date) => {
-  return function (dispatch) {
-    // You can include the date in the API request if needed
-    axios
-      .get(`${API}/api/record/${id}`, {
+  return async function (dispatch) {
+    try {
+      // You can include the date in the API request if needed
+      const response = await axios.get(`${API}/api/record/${id}`, {
         params: { date: date } // Include the date as a query parameter if needed
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        dispatch(RecordsGet(resp.data));
-      })
-      .catch((err) => console.log(err));
+      });
+
+      console.log(response.data);
+      dispatch(RecordsGet(response.data));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // Handle errors if needed
+    }
   };
 };
+
 
 export const getFrames = (data) => {
   return function (dispatch) {
