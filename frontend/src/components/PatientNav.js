@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -11,6 +11,8 @@ export default function PatientNav() {
   const isLoggedIn = !!localStorage.getItem("doctorData");
   const navigate = useNavigate();
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const styles = {
     navbar: {
@@ -37,7 +39,7 @@ export default function PatientNav() {
   };
 
   const handleHomeClick = () => {
-    if (isLoggedIn) {
+    if (localStorage.getItem("doctorData") != null) {
       if (
         JSON.parse(localStorage.getItem("doctorData"))["staffType"] == "admin"
       ) {
@@ -66,9 +68,11 @@ export default function PatientNav() {
               <HomeIcon />
             </Button>
           ) : (
-            <Button onClick={handleHomeClick} color="inherit">
-              <ArrowBackIcon />
-            </Button>
+            !isHomePage && (
+              <Button onClick={handleHomeClick} color="inherit">
+                <ArrowBackIcon />
+              </Button>
+            )
           )}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Pain Analysis

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,Response,redirect,url_for
+from flask import Flask, request, jsonify,Response,redirect,url_for,render_template
 from flask_pymongo import PyMongo, ObjectId
 # from check import open_opencv_window
 from flask_cors import CORS
@@ -456,19 +456,6 @@ def getArrayofRecords(id):
         records = sorted(records, key=lambda x: datetime.datetime.strptime(x["datetime"], "%m/%d/%Y"))
     return jsonify(records)
 
-@app.route('/webcam', methods=['GET'])
-def webcam():
-    records = nameCollection.find()
-    data_list = []
-    for record in records:
-        username = record.get("name")
-        activity = record.get("activity")
-        duration = record.get("duration")
-        data_list.append([username, activity, duration])
-    print(data_list)
-    return Response(generate_frames(data_list[-1][0], data_list[-1][1], data_list[-1][2]), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
 @app.route('/start_opencv', methods=['POST'])
 def start_opencv():
     username = request.json["name"]
@@ -482,12 +469,44 @@ def start_opencv():
             "activity":activity,
             "duration":duration
         })
-        return jsonify({"msg": "Account exists"})
+        training_required,net = check_users(username)
+        if training_required:
+            return jsonify({"msg": "Account exists without model"})
+        else:
+            return jsonify({"msg": "Account exists with model"})
     else:
         return jsonify({"msg": "the account does not exist"})
-
     
-def generate_frames(username,activity,duration):
+@app.route('/webcam', methods=['GET'])
+def webcam():
+    records = nameCollection.find()
+    data_list = []
+    for record in records:
+        username = record.get("name")
+        activity = record.get("activity")
+        duration = record.get("duration")
+        data_list.append([username, activity, duration])
+    print(data_list)
+    return Response(generate_frames(data_list[-1][0], data_list[-1][1], data_list[-1][2]), mimetype='multipart/x-mixed-replace; boundary=frame')
+    
+
+def check_users(username):
+    try:
+        net = torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+        print("Welcome back, {}!".format(username))
+        training_required = False
+    except FileNotFoundError:
+        print("Your profile is not found in the system. Personalized calibration is required.")
+        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+        training_required = True
+
+    return training_required,net
+
+@app.route('/check_user', methods=['POST'])
+def check_user():
+    print("Your profile is not found in the system. Personalized calibration is required.")
+    net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
+    username = request.json["name"]
     base = 2
     IN_DIM = int(936 * 60 / base)  # always use 60 / base number to get the final datapoints, e.g. 60 / base_2 = 30
     SEQUENCE_LENGTH = int(60 / base)  # 2
@@ -502,26 +521,6 @@ def generate_frames(username,activity,duration):
     WEIGHT_DECAY = 1e-6  # not used as the number of epoches is only 8 or 10
     EPOCHES = 20 ## 10 epoches can reach 100%
     USE_GPU = False
-
-    try:
-        net =torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
-        print("welcome back! "+ username)
-        training_required = False
-    except:
-        print("your profile is not found in the system, a personalized calibration is required")
-        net = torch.load('C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\SGH_26to100_b2_e100.pth')
-        training_required = True
-
-
-
-
-    #net = torch.load('C:\\projects\\STALSTM\\models\\SGH_26to100_b2_e100.pth')
-    #net = torch.load('C:\\projects\\STALSTM\\models\\Du Tiehua_personalized_train.pth')
-
-    """"
-    transfer learning
-    record a video of pain, then record a video without pain
-    """""""""
     optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
     # 学习率根据训练的次数进行调整
@@ -540,10 +539,6 @@ def generate_frames(username,activity,duration):
     for name,param in net.named_parameters():
         if name not in ['T_A.weight', 'T_A.bias','layer_out.weight']:
             param.requires_grad = False
-
-
-
-
 
     def train(inputs, groundtruths):
         net.train()
@@ -566,68 +561,67 @@ def generate_frames(username,activity,duration):
         loss_list.append(loss.item())
 
         return loss_list, acc
+    
+    cv2.imshow("pain", 3)
+    train_data_pain = keypoints_extract('Pain', 8)
+    cv2.imshow("No pain",3)
+    train_data_nopain = keypoints_extract('No pain', 8)
 
+    train_data = np.vstack([train_data_pain, train_data_nopain])
+    train_data = train_data.astype(np.float32)
+    train_data = torch.from_numpy(train_data)
+    inputs = Variable(train_data)
+    ground_truth_pain = np.zeros(shape=(8, 3))
+    ground_truth_pain[:, 0] = 1
+    ground_truth_nopain = np.zeros(shape=(8, 3))
+    ground_truth_nopain[:, -1] = 1
+    train_groundtruth = np.vstack([ground_truth_pain, ground_truth_nopain])
+    train_groundtruth = train_groundtruth.astype(np.float32)
+    train_groundtruth = torch.from_numpy(train_groundtruth)
+    train_data = Variable(train_data)
+    train_groundtruth = Variable(train_groundtruth)
+    #msg_display("pain", 3)
+    ## start training
+    train_start = time.time()
+    loss_recorder = []
 
-    #user_option = input('Enter 0 for live pain level estimation, enter 1 for personalized calibration')
+    print('starting training... ')
 
-    #### prepare training data
-    # train_data -- nx28080 array
-    # train_ground truth nx3 array 100 pain, 001 no pain
+    for epoch in range(EPOCHES):
+        print(epoch)
 
-    if training_required:
-        cv2.imshow("pain", 3)
-        train_data_pain = keypoints_extract('Pain', 8)
-        cv2.imshow("No pain",3)
-        train_data_nopain = keypoints_extract('No pain', 8)
+        loss_list, acc = train(train_data, train_groundtruth)
 
-        train_data = np.vstack([train_data_pain, train_data_nopain])
-        train_data = train_data.astype(np.float32)
-        train_data = torch.from_numpy(train_data)
-        inputs = Variable(train_data)
-        ground_truth_pain = np.zeros(shape=(8, 3))
-        ground_truth_pain[:, 0] = 1
-        ground_truth_nopain = np.zeros(shape=(8, 3))
-        ground_truth_nopain[:, -1] = 1
-        train_groundtruth = np.vstack([ground_truth_pain, ground_truth_nopain])
-        train_groundtruth = train_groundtruth.astype(np.float32)
-        train_groundtruth = torch.from_numpy(train_groundtruth)
-        train_data = Variable(train_data)
-        train_groundtruth = Variable(train_groundtruth)
-        #msg_display("pain", 3)
-        ## start training
-        train_start = time.time()
-        loss_recorder = []
+        loss_recorder.append(np.mean(loss_list))
 
-        print('starting training... ')
+        acc = acc * 100.0
+        adjust_lr.step()
 
-        for epoch in range(EPOCHES):
-            print(epoch)
-
-            loss_list, acc = train(train_data, train_groundtruth)
-
-            loss_recorder.append(np.mean(loss_list))
+        print('\nepoch = %d \nloss = %.5f, accuracy = %2.5f' % (epoch + 1, np.mean(loss_list), acc))
+    """
+        if (epoch % 5 == 0):
+            test_start = time.time()
+            acc, average_error = test()
 
             acc = acc * 100.0
-            adjust_lr.step()
+            print('Loss = %.5f, Test accuracy is = %2.5f' % (average_error, acc.numpy()))
+    """
 
-            print('\nepoch = %d \nloss = %.5f, accuracy = %2.5f' % (epoch + 1, np.mean(loss_list), acc))
-        """
-            if (epoch % 5 == 0):
-                test_start = time.time()
-                acc, average_error = test()
-
-                acc = acc * 100.0
-                print('Loss = %.5f, Test accuracy is = %2.5f' % (average_error, acc.numpy()))
-        """
-
-        print('training time = {}s'.format(int((time.time() - train_start))))
+    print('training time = {}s'.format(int((time.time() - train_start))))
 
 
 
-        torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
-        text = "System calibration completed"
+    torch.save(net, "C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
+    text = "System calibration completed"
 
+    return jsonify({"msg": "Training Done"})
+
+    
+def generate_frames(username,activity,duration):
+    net = torch.load("C:\\Users\\parikshit joshi\\Desktop\\FYPJ_sprint\\FYPJ\\backend\\src\\model\\" + username + "_personalized_train.pth")
     net.eval()
+    text = "System Calibration Completed"
+
     mp_face_mesh = mp.solutions.face_mesh
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
@@ -706,8 +700,7 @@ def generate_frames(username,activity,duration):
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-
+            
+        
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
-
