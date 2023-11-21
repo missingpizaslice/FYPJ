@@ -170,7 +170,7 @@ export default function DoctorUpdatePassword() {
               <TextField
                 required
                 fullWidth
-                type="text"
+                type="password"
                 placeholder="************"
                 name="currentPassword"
                 value={currentPassword || ""}
