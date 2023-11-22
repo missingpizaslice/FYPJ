@@ -11,7 +11,6 @@ import DoctorDashboard from "./pages/DoctorDashboard";
 import Homepage from "./pages/Homepage";
 import Training_page from "./pages/Training_page";
 import Form from "./pages/PredictForm";
-import SubmitPredForm from "./pages/submitPredForm"; 
 import NewNotes from "./pages/moderndash"; 
 import AdminDashboard from "./pages/AdminDashboard";
 import DoctorUpdatePassword from "./pages/DoctorUpdatePassword";
@@ -37,10 +36,6 @@ const router = createBrowserRouter([
   {
     path: "/NewNotes",
     element: <NewNotes />,
-  },
-  {
-    path: "/submitPredForm",
-    element: <SubmitPredForm />,
   },
   {
     path: "/doctorLogin",

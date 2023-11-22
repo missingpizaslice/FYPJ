@@ -23,8 +23,11 @@ function YourForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [nullerror, setNullError] = useState("");
+
   useEffect(() => {
     setloginerror("");
+    setNullError("");
     // Check if the authentication process returns an error
     if (msg === "the account does not exist") {
       // sessionStorage.clear("")
@@ -53,19 +56,31 @@ function YourForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const initial = {
-      name: name,
-      activity: activity,
-      duration: duration,
-    };
-    // sessionStorage.setItem('data', JSON.stringify(initial));
-    // // Handle form submission here, e.g., send the 'name' to your server
-    sessionStorage.setItem("data",JSON.stringify(initial))
-    dispatch(addPatientModel(initial));
-    setName("");
-    setActivity("");
-    setDuration("");
+    var valiated = true;
+    if (!name || !activity || !duration) {
+      setNullError("Please fill in all the fields.");
+      return
+    }
+    
+    if (valiated == true) {
+      // Clear nullError if all fields are filled
+      setNullError("");
 
+      const initial = {
+        name: name,
+        activity: activity,
+        duration: duration,
+      };
+
+      // Handle form submission here, e.g., send the 'name' to your server
+      sessionStorage.setItem("data", JSON.stringify(initial));
+      dispatch(addPatientModel(initial));
+
+      // Clear input fields
+      setName("");
+      setActivity("");
+      setDuration("");
+    }
   };
 
   return (
@@ -95,6 +110,9 @@ function YourForm() {
           >
             <Typography component="h1" variant="h4">
               Details
+            </Typography>
+            <Typography style={{ marginTop: "16px" }} component="p" color={"red"}>
+              {nullerror}
             </Typography>
             <FormControl
               variant="outlined"
@@ -135,6 +153,7 @@ function YourForm() {
                     value={activity}
                     onChange={handleActivityChange}
                   />
+                  
                 </Box>
               </Form.Group>
             </FormControl>
@@ -160,6 +179,7 @@ function YourForm() {
                 <MenuItem value=">9 hours"> more than 9 hours</MenuItem>
                 <MenuItem value="None">None</MenuItem>
               </Select>
+              
             </FormControl>
             <div className=".d-grid gap-2 mt-2">
               <Button
